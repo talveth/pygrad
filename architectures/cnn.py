@@ -1,8 +1,8 @@
 
 import numpy as np
-from machine.cpu.tensor import Tensor
-from machine.cpu.module import Module
-from machine.cpu.basics import ReLU, Linear, Dropout, Flatten, Conv2D
+from autograd.cpu.tensor import Tensor
+from autograd.cpu.module import Module
+from autograd.cpu.basics import ReLU, Linear, Dropout, Flatten, Conv2D
 
 
 PRECISION = np.float64

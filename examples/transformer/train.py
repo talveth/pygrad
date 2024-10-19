@@ -1,10 +1,14 @@
 
 # PYTHONPATH=. python ....py
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from architectures.transformer import Transformer
-from machine.cpu.losses import CCELoss
-from machine.cpu.optims import Adam
-from machine.cpu.tensor import Tensor
+from autograd.cpu.losses import CCELoss
+from autograd.cpu.optims import Adam
+from autograd.cpu.tensor import Tensor
 from examples.transformer.utils import accuracy_fn, infer_one, save_model, PrepareDataset
 
 import numpy as np

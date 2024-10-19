@@ -1,6 +1,6 @@
 
 import numpy as np
-from machine.cpu.tensor import Tensor
+from autograd.cpu.tensor import Tensor
 from typing import Union
 import dill
 import os

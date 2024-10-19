@@ -141,7 +141,7 @@ class Flatten:
 
     def __call__(self, x):
         assert isinstance(x, (Tensor)), "Make sure the input is of type Tensor"
-        out         = x.flatten()
+        out         = x.reshape((x.shape[0], 1, -1))
         self.tensor = out
         out.label   = self.label
         return self.tensor

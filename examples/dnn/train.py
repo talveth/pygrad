@@ -1,7 +1,11 @@
 
-from machine.cpu.losses import CCELoss
-from machine.cpu.optims import SGD
-from machine.cpu.tensor import Tensor
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from autograd.cpu.losses import CCELoss
+from autograd.cpu.optims import SGD
+from autograd.cpu.tensor import Tensor
 
 from examples.dnn.utils import accuracy_fn, save_model
 from architectures.dnn import DNN
