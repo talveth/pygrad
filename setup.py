@@ -2,30 +2,32 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="danila-grad",              # The name of your package
-    version="alpha",                # The current version of your package
+    name="danila_grad",
+    version="0.0.1",
     packages=find_packages(exclude=["_correctness*",
-                                    "tests",
+                                    "_extras*",
                                     "_speed*",
                                     ".direnv",
-                                    "architectures",
+                                    "data*",
                                     "examples",
-                                    ]),       # Automatically find and include your package
-    install_requires=[              # Optional: List of dependencies
-        "numpy==1.14.0",
-        "numba==0.36.2+0.g540650d.dirty"
+                                    "tests",
+                                    ".envrc",
+                                    ]),
+    install_requires=[
+        "numpy",
+        "numba",
     ],
     author="Danila Kurganov",             # Your name
     author_email="dan.kurg@gmail.com",  # Your email
     description="Autograd in NumPy",
     long_description=open("README.md").read(),  # Optional: Long description from README
-    long_description_content_type="text/markdown",  # README format
-    # url="https://github.com/yourusername/my_package",  # Project URL
-    classifiers=[                   # Additional package metadata
+    # long_description_content_type="text/markdown",
+    url="https://github.com/baubels/danila-grad",
+    classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    # python_requires='>=3.11',         # Minimum Python version required
+    python_requires='>=3.10',
 )
 
