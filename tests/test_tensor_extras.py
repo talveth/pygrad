@@ -13,10 +13,86 @@ import numba as nb
 
 
 class TestTensorExtras(unittest.TestCase):
+
+    def test_std(self):
+        shapes = [(10,20,20), (10,20), (1,1,1), (1,10,1), (1,1,1,1)]
+        for shape in shapes:
+            for axis in range(len(shape)):
+                for keepdims in [True, False]:
+
+                    a_val               = np.random.uniform(0, 1, shape)
+
+                    # custom
+                    a                   = Tensor(a_val)
+                    a_fnc               = a.std(axis=axis, keepdim=keepdims)
+                    tensor_loss         = (a_fnc).sum()
+                    tensor_loss.backward()
+
+                    # pytorch
+                    at                  = torch.tensor(a_val, requires_grad=True)
+                    at_fnc              = torch.std(at, dim=axis, keepdim=keepdims, correction=0)
+                    at_fnc.retain_grad()
+                    torch_loss          = (at_fnc).sum()
+                    torch_loss.backward()
+
+                    self.assertTrue(np.all(np.isclose(tensor_loss.value.item(), torch_loss.detach().numpy().item())))
+                    self.assertTrue(a.grad.shape == tuple(at.grad.shape))
+                    self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=1e-5)))
+                    self.assertTrue(np.all(np.isclose(a_fnc.grad, at_fnc.grad, rtol=1e-5)))
+
+    def test_mean(self):
+        shapes = [(10,20,20), (10,20), (1,1,1), (1,10,1), (1,1,1,1)]
+        for shape in shapes:
+            for axis in range(len(shape)):
+                for keepdims in [True, False]:
+                    a_val               = np.random.uniform(0, 1, shape)
+
+                    # custom
+                    a                   = Tensor(a_val)
+                    a_fnc               = a.mean(axis=axis, keepdims=keepdims)
+                    tensor_loss         = (a_fnc).sum()
+                    tensor_loss.backward()
+
+                    # pytorch
+                    at                  = torch.tensor(a_val, requires_grad=True)
+                    at_fnc              = at.mean(axis=axis, keepdims=keepdims)
+                    at_fnc.retain_grad()
+                    torch_loss          = (at_fnc).sum()
+                    torch_loss.backward()
+
+                    self.assertTrue(tensor_loss.value, torch_loss.detach().numpy())
+                    self.assertTrue(a.grad.shape == tuple(at.grad.shape))
+                    self.assertTrue(np.all(np.isclose(a.grad, at.grad)))
+                    self.assertTrue(np.all(np.isclose(a_fnc.grad, at_fnc.grad)))
+
+    def test_sum(self):
+        shapes = [(10,20,20), (10,20), (1,1,1), (1,10,1), (1,1,1,1)]
+        for shape in shapes:
+            for axis in range(len(shape)):
+                for keepdims in [True, False]:
+                    a_val               = np.random.uniform(0, 1, shape)
+
+                    # custom
+                    a                   = Tensor(a_val)
+                    a_fnc               = a.sum(axis=axis, keepdims=keepdims)
+                    tensor_loss         = (a_fnc).sum()
+                    tensor_loss.backward()
+
+                    # pytorch
+                    at                  = torch.tensor(a_val, requires_grad=True)
+                    at_fnc              = at.sum(axis=axis, keepdims=keepdims)
+                    at_fnc.retain_grad()
+                    torch_loss          = (at_fnc).sum()
+                    torch_loss.backward()
+
+                    self.assertTrue(tensor_loss.value, torch_loss.detach().numpy())
+                    self.assertTrue(a.grad.shape == tuple(at.grad.shape))
+                    self.assertTrue(np.all(np.isclose(a.grad, at.grad)))
+                    self.assertTrue(np.all(np.isclose(a_fnc.grad, at_fnc.grad)))
+
     def test_relu(self):
         shapes = [(10,20,20), (10,20), (1,1,1), (), (1,10,1)]
         for shape in shapes:
-            # checks for broken broadcasting when doing mul ops
             a_val               = np.random.uniform(0, 1, shape)
 
             # custom

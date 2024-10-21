@@ -21,7 +21,7 @@ class BCELoss:
         assert np.max(pred.value)   <= 1 and np.min(pred.value) >= 0, "Ensure predictions have value in [0,1]"
         assert np.max(target.value) <= 1 and np.min(target.value) >= 0, "Ensure targets have values in {0,1}"
         outp          = target * pred.log() + (1-target) * ((1-pred).log())       # is batched
-        loss          = (-1/pred.shape[0]) * outp.sum(over_batch=True)            # sums in batch dimension also
+        loss          = (-1/pred.shape[0]) * outp.sum(axis=(0,1,2))            # sums in batch dimension also
         return loss
 
 
@@ -44,7 +44,7 @@ class CCELoss:
             target = target.reshape((-1,1,target.shape[-1]))
         
         if not mask:
-            loss             = (target * (pred.softmax().log())).sum(over_batch=True)
+            loss             = (target * (pred.softmax().log())).sum(axis=(0,1,2))
             loss_multiplier  = Tensor(value=np.ones_like(loss.value)*(-1/pred.shape[0]))
             loss             = loss * loss_multiplier
         else:
@@ -52,7 +52,7 @@ class CCELoss:
             mask_np          = (target[:,:,0] != 1)[...,None]
             eos_no_mask      = ((target[:,:,0] == 1).cumsum(axis=1) == 1)[...,None]
             mask             = Tensor(mask_np | eos_no_mask, learnable=False, leaf=True)
-            loss             = ((target*mask)*(pred.softmax().log())).sum(over_batch=True)
+            loss             = ((target*mask)*(pred.softmax().log())).sum(axis=(0,1,2))
             loss_multiplier  = Tensor(value=np.ones_like(loss.value)*(-1/np.sum(mask[:])))
             loss             = loss * loss_multiplier
         return loss

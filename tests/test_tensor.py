@@ -33,7 +33,7 @@ class TestTensor(unittest.TestCase):
             # custom
             a                   = Tensor(a_val)
             b                   = Tensor(b_val)
-            tensor_loss         = (a@b).sum(over_batch=True)
+            tensor_loss         = (a@b).sum()
             tensor_loss.backward()
 
             # pytorch
@@ -88,13 +88,13 @@ class TestTensor(unittest.TestCase):
                     bt = torch.tensor(b_val, requires_grad=True)
                     
                     if k == 0:
-                        tensor_loss = (a+b).sum(over_batch=True)
+                        tensor_loss = (a+b).sum()
                         print((a+b).shape, shapes_1[i], shapes_2[i])
                         tensor_loss.backward()
                         torch_loss = (at+bt).sum()
                         torch_loss.backward()
                     elif k == 1:
-                        tensor_loss = (a-b).sum(over_batch=True)
+                        tensor_loss = (a-b).sum()
                         tensor_loss.backward()
                         torch_loss = (at-bt).sum()
                         torch_loss.backward()
@@ -186,13 +186,13 @@ class TestTensor(unittest.TestCase):
                     bt = torch.tensor(b_val, requires_grad=True)
                     
                     if k == 0:
-                        tensor_loss = (a*b).sum(over_batch=True)
+                        tensor_loss = (a*b).sum()
                         print((a+b).shape, shapes_1[i], shapes_2[i])
                         tensor_loss.backward()
                         torch_loss = (at*bt).sum()
                         torch_loss.backward()
                     elif k == 1:
-                        tensor_loss = (a/b).sum(over_batch=True)
+                        tensor_loss = (a/b).sum()
                         tensor_loss.backward()
                         torch_loss = (at/bt).sum()
                         torch_loss.backward()

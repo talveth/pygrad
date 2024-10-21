@@ -153,7 +153,7 @@ class Tensor:
     def __rsub__(self, other):
         return (-self) + other
 
-    def sum(self, over_batch:bool=True):
+    def sum(self, axis:Union[None,int,tuple]=None, keepdims:bool=False):
         """
         Returns a Tensor with value equal to the sum of all the Tensor values.
 
@@ -161,22 +161,27 @@ class Tensor:
         dimension, and instead the sum is taken over the other dimensions.
         
         over_batch: boolean
+        axis: None, int, or tuple of ints, suitable for self.shape. 
+                    If None, sum is performed over all axes.
+        keepdims:bool, False
         """
-        assert isinstance(over_batch, bool), "over_batch must be a boolean."
-        if over_batch:
-            new_val         = np.einsum('...->', self.value, optimize='optimal')
-        else:
-            new_val         = np.einsum('i...->i', self.value, optimize='optimal')
-        
-        # if over_batch:
-            # new_val = new_val.reshape(1, 1, -1)
-        # else:
-            # reshape_dims = (self.shape[0], 1, -1) if len(self.shape) <= 3 else (self.shape[0], 1, 1, -1)
-            # new_val = new_val.reshape(reshape_dims)
+        assert isinstance(keepdims, bool), "keepdims must be a boolean."
+        assert isinstance(axis, (int, tuple, type(None))), "axis must be None, an int, or a tuple."
 
-        new             = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True)
+        if axis is None:
+            axis = tuple([i for i in range(len(self.shape))])
+        new_val             = np.sum(self.value, axis=axis, keepdims=keepdims)
+        new                 = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True)
         def bpass():
-            self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal')
+            if keepdims:
+                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal')
+            else:
+                new_grad    = np.expand_dims(new.grad, axis=axis)
+                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal')
+            # print(new.grad.shape, self.shape, self.grad.shape)
+            # self_grad   = 
+            # self.grad  += 
+            # self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal')
         new.bpass       = bpass
         return new
 
@@ -254,17 +259,22 @@ class Tensor:
         new.bpass = bpass
         return new
 
-    def std(self, axis:int):
+    def std(self, axis:int, keepdim=True):
         """
         Returns the standard deviation of the Tensor along the specified axis.
         Bias correction is not performed here.
 
         axis: int
+        keepdim: bool
         """
-        assert isinstance(axis, int), "The specified axis must be an integer."
+        assert isinstance(axis, int),       "The specified axis must be an integer."
+        assert isinstance(keepdim, bool),   ""
         N   = self.value.shape[axis]
+        if N == 1: return 0 * self
         d2  = (self - self.mean(axis=axis,keepdims=True))**2  # abs is for complex `a`
-        var = d2.mean(axis=axis, keepdims=True)               # no bias correction done here
+        print(d2.value)
+        var = d2.mean(axis=axis, keepdims=keepdim)            # no bias correction done here
+        print(var.value)
         new = var**0.5
         return new
 
