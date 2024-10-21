@@ -62,7 +62,7 @@ class AddNorm:
         return outsum_normed
 
 
-class Linear: # Ax + b
+class Linear:
     def __init__(self, i_dim:int, o_dim:int, label:Union[None,int,str]="Linear", bias:bool=True, dtype=PRECISION) -> None:
         self.dtype  = dtype
         self.i_dim  = i_dim

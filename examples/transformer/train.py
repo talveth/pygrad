@@ -102,7 +102,7 @@ def main():
                 losses.extend(loss)
         
         infer_one(model, prepare_dataset)
-        save_model(f"tests/transformer/model_saves/model_epoch_{e}", model, prepare_dataset)
+        save_model(f"examples/transformer/model_saves/model_epoch_{e}", model, prepare_dataset)
     print("Finished training model.")
 
 if __name__ == "__main__":

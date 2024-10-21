@@ -58,7 +58,7 @@ def main():
                                 })
                 gc.collect()
         optim.lr /= 10
-        save_model(f"tests/dnn/model_saves/model_epoch_{e}", model)
+        save_model(f"examples/dnn/model_saves/model_epoch_{e}", model)
 
 
 if __name__ == "__main__":

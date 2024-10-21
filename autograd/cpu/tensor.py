@@ -67,6 +67,7 @@ class Tensor:
         self.weights        = None
         self.grad           = np.zeros_like(self.value).view(self.dtype)
         self.bpass          = lambda : None
+        # self.n_conv_calls   = 0
         np.seterr(all='ignore')
 
     def _is_valid_value(self, value, with_tensor:bool=False)->tuple:
@@ -108,6 +109,21 @@ class Tensor:
         shape2_broadcasts = np.array(broadcast)//np.array(sh2)
         return shape1_broadcasts, shape2_broadcasts
 
+    def _broadcast_addgrad(self, grad_to_change, new_grad):
+        sh1b, _     = self._determine_broadcasting(grad_to_change, new_grad)
+        # across all broadcast dimensions, sum new_grad gradient
+        for i in range(len(sh1b)):
+            if sh1b[i] != 1:
+                new_grad = np.sum(new_grad, axis=i, keepdims=True)
+        # reshape new_grad to be the shape of grad_to_change
+        s1, s2 = grad_to_change.shape, new_grad.shape
+        if s1 == ():
+            new_grad = np.sum(new_grad)
+        elif len(s2)>len(s1):
+            diff = len(s2)-len(s1)
+            new_grad = new_grad.reshape(s2[diff:])
+        return new_grad
+
     def __add__(self, other):
         self._is_valid_value(other, with_tensor=True)
         if isinstance(other, (float, int, np.integer, np.floating)):
@@ -116,33 +132,8 @@ class Tensor:
         new = Tensor(value=self.value + other.value, _prev=(self, other), leaf=True)
 
         def bpass():
-            sh1b, _     = self._determine_broadcasting(other.grad, new.grad)
-            new_grad    = new.grad
-            for i in range(len(sh1b)):
-                if sh1b[i] != 1:
-                    new_grad = np.sum(new_grad, axis=i, keepdims=True)
-            s1, s2 = other.grad.shape, new_grad.shape
-            if len(s2)>len(s1):
-                diff = len(s2)-len(s1)
-                new_grad = new_grad.reshape(s2[diff:])
-            if other.grad.shape == () and not new_grad.shape==():
-                other.grad += new_grad[0]
-            else:
-                other.grad += new_grad
-
-            sh1b, _     = self._determine_broadcasting(self.grad, new.grad)
-            new_grad    = new.grad
-            for i in range(len(sh1b)):
-                if sh1b[i] != 1:
-                    new_grad = np.sum(new_grad, axis=i, keepdims=True)
-            s1, s2 = other.grad.shape, new_grad.shape
-            if len(s2)>len(s1):
-                diff = len(s2)-len(s1)
-                new_grad = new_grad.reshape(s2[diff:])
-            if self.grad.shape == () and not new_grad.shape==():
-                self.grad += new_grad[0]
-            else:
-                self.grad += new_grad
+            other.grad += self._broadcast_addgrad(other.grad, new.grad.copy())
+            self.grad  += self._broadcast_addgrad(self.grad, new.grad.copy())
         new.bpass                   = bpass
         return new
 
@@ -162,8 +153,7 @@ class Tensor:
     def __rsub__(self, other):
         return (-self) + other
 
-
-    def sum(self, over_batch:bool=False):
+    def sum(self, over_batch:bool=True):
         """
         Returns a Tensor with value equal to the sum of all the Tensor values.
 
@@ -278,6 +268,22 @@ class Tensor:
         new = var**0.5
         return new
 
+    def _broadcast_mulgrad(self, grad_to_change, new_grad):
+        # """broadcasts"""
+        sh1b, _     = self._determine_broadcasting(grad_to_change, new_grad)
+        # across all broadcast dimensions, sum new_grad gradient
+        for i in range(len(sh1b)):
+            if sh1b[i] != 1:
+                new_grad = np.sum(new_grad, axis=i, keepdims=True)
+        # reshape new_grad to be the shape of grad_to_change
+        s1, s2 = grad_to_change.shape, new_grad.shape
+        if s1 == ():
+            new_grad = np.sum(new_grad)
+        elif len(s2)>len(s1):
+            diff = len(s2)-len(s1)
+            new_grad = new_grad.reshape(s2[diff:])
+        return new_grad
+
     def __mul__(self, other):
         if isinstance(other, (int, float, np.integer, np.floating)):
             other = Tensor(other, learnable=True, leaf=True)
@@ -290,25 +296,11 @@ class Tensor:
         new = Tensor(value=new_val, _prev=(self, other), leaf=True)
 
         def bpass():
-            sh1b, _     = self._determine_broadcasting(self.grad, new.grad)
             new_grad    = np.einsum('...,...->...', other.value, new.grad, optimize='optimal')
-            for i in range(len(sh1b)):
-                if sh1b[i] != 1:
-                    new_grad = np.sum(new_grad, axis=i, keepdims=True)
-            if self.grad.shape == () and not new_grad.shape==():
-                self.grad += new_grad[0]
-            else:
-                self.grad += new_grad
-                        
-            sh1b, _     = self._determine_broadcasting(other.grad, new.grad)
+            self.grad  += self._broadcast_mulgrad(self.grad, new_grad)
             new_grad    = np.einsum('...,...->...', self.value, new.grad, optimize='optimal')
-            for i in range(len(sh1b)):
-                if sh1b[i] != 1:
-                    new_grad = np.sum(new_grad, axis=i, keepdims=True)
-            if other.grad.shape == () and not new_grad.shape==():
-                other.grad += new_grad[0]
-            else:
-                other.grad += new_grad            
+            other.grad  += self._broadcast_mulgrad(other.grad, new_grad)
+          
         new.bpass = bpass
         return new
 
@@ -334,6 +326,25 @@ class Tensor:
         new.bpass                    = bpass
         return new
 
+    def mask_idcs(self, mask_idcs:tuple, value:float=0.0):
+        """
+        Applies a mask to the Tensor via an array. Creates a copy of the Tensor.
+
+        mask_idcs: tuple of indices from which to mask values of self.
+        value: The mask value. Defaults to 0.0.
+        """
+        assert isinstance(mask_idcs, (tuple, np.ndarray)), "Ensure that mask_idcs is of type tuple."
+        new_val             = copy.deepcopy(self.value)
+        new_val[mask_idcs]  = value
+        new                 = Tensor(value=new_val, _prev=(self,), leaf=True)
+
+        def bpass():
+            ones_arr        = np.ones_like(self.value)
+            ones_arr[mask_idcs] = value
+            self.grad      += ones_arr * new.grad
+        new.bpass = bpass
+        return new
+
     def relu(self):
         """
         Applies a point-wise ReLU to the Tensor. Outputs a new Tensor copy.
@@ -356,27 +367,6 @@ class Tensor:
         new     = Tensor(value=tanh_val, _prev=(self,), leaf=True)
         def bpass():
             self.grad   += np.einsum('...,...->...', (1-tanh_val**2), new.grad, optimize='optimal')
-        new.bpass = bpass
-        return new
-
-    def mask_idcs(self, mask_idcs:np.ndarray, value:float=0.0):
-        """
-        Applies a mask to the Tensor via an array. Creates a copy of the Tensor.
-
-        mask_idcs: np.ndarray. Ensure mask_idcs is of the same shape as self.
-        value: The value self will take at the mask values. Defaults to 0.0.
-        """
-        assert isinstance(mask_idcs, np.ndarray), "Ensure that mask_idcs is of type np.ndarray."
-        assert self.shape == mask_idcs.shape,     "Ensure that self and mask_idcs are of the same shape."
-
-        new_val             = copy.deepcopy(self.value)
-        new_val[mask_idcs]  = value
-        new                 = Tensor(value=new_val, _prev=(self,), leaf=True)
-
-        def bpass():
-            ones_arr        = np.ones_like(self.value)
-            ones_arr[mask_idcs] = value
-            self.grad      += ones_arr * new.grad
         new.bpass = bpass
         return new
 
@@ -428,7 +418,10 @@ class Tensor:
 
         Self has to be of shape (..., 1).
         """
-        assert self.shape[-1] == 1,         "Ensure the input has shape (..., 1)"
+        if self.shape != ():
+            assert self.shape[-1] == 1,         "Ensure the input has shape (..., 1)"
+        else:
+            pass
         new_val             = 1/(1 + np.exp(-self.value))
         new                 = Tensor(value=new_val, _prev=(self,), leaf=True)
         def bpass():
@@ -457,7 +450,7 @@ class Tensor:
         Strides are set to 1 by default, with no padding.
 
         If self.shape = (1, out_channels, in_channels, kH, kW)
-            other.shape = (1, in_channels, H, W)
+            other.shape = (bs, in_channels, H, W)
             output.shape = (bs, out_channels, H-kH+1, W-kW+1)
 
         other: 4D Tensor.
@@ -465,11 +458,13 @@ class Tensor:
         assert len(other.shape)                 == 4, "Ensure other.shape is 4D: (1, in_channels, H, W)"
         assert len(self.shape)                  == 5, "Ensure self.shape is  5D: (1, out_channels, in_channels, kH, kW)"
         assert other.shape[1] == self.shape[2],       "Ensure in_channels of self match in_channels of other."
-        assert other.shape[-2] > self.shape[-2],      "Ensure the input is at least as large as the kernel."
-        assert other.shape[-1] > self.shape[-1],      "Ensure the input is at least as large as the kernel."
+        assert other.shape[-2] >= self.shape[-2],      f"Ensure the input {other.shape} is at least as large as the kernel {self.shape}."
+        assert other.shape[-1] >= self.shape[-1],      f"Ensure the input {other.shape} is at least as large as the kernel {self.shape}."
         
-        n_conv_calls                            = 0
-        n_conv_calls                           += 1
+        if self.shape[0] != other.shape[0]:
+            self.new_value(np.repeat(self.value, other.shape[0], axis=0))
+
+        # self.n_conv_calls                       += 1
         b, inC, H, W                            = other.shape
         b, outC, inC, kH, kW                    = self.shape
         output_np                               = np.zeros(shape=(b, outC, H-kH+1, W-kW+1))
@@ -477,8 +472,6 @@ class Tensor:
             for j in range(W-kW+1):
                 for c in range(outC):
                     output_np[:,c,i,j]  = np.einsum('i...->i', self.value[:,c,:,:,:] * other.value[:,:,i:i+kH,j:j+kW], optimize='optimal')
-                    # temp_self                   = Tensor(value=self.value[:,c,:,:,:], leaf=True)                                      
-                    # output_np[:, c, i, j]       = (temp_self * Tensor(other.value[:,:,i:i+kH, j:j+kW], leaf=True)).sum().value
         new                             = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True)
 
         def bpass():
@@ -486,16 +479,17 @@ class Tensor:
             # gradients are averaged across the out_channels arguments
             # if the same conv is called >1 times per forward pass, average the gradient over those number of times
             # average the other gradient with the number of out_channels
-            self.reset_grad()
-            other.reset_grad()
+            
+            # self.reset_grad()
+            # other.reset_grad()
             for i in range(H-kH+1):
                 for j in range(W-kW+1):
                     for c in range(outC):
                         self.grad[:,c,:,:,:]   += np.einsum('...,...->...', other.value[:,:,i:i+kH, j:j+kW], new.grad[:,c,i,j].reshape(-1,1,1,1), optimize='optimal')  # (b, in_channels, kH, kW)
                         temp_other_grad_a       = np.einsum('...,...->...', self.value, new.grad[:,c,i,j].reshape(-1,1,1,1,1), optimize='optimal')                     # (b,out_c, in_c, kH, kW)
-                        other.grad[:,:,i:i+kH, j:j+kW] += np.sum(temp_other_grad_a, axis=(1))                                                      # (b, in_c, kH, kW)
-            
-            self.grad                          *= n_conv_calls
+                        other.grad[:,:,i:i+kH,j:j+kW] += np.sum(temp_other_grad_a, axis=(1))
+
+            # self.grad                          *= self.n_conv_calls
             other.grad                         /= outC
         new.bpass                               = bpass
         return new

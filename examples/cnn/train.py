@@ -53,7 +53,7 @@ def main():
                                 'batch pred accuracy:': accuracy_fn(y_pred.value, y_true.value).item()
                                 })
                 gc.collect()
-        save_model(f"tests/cnn/model_saves/model_epoch_{e}", model)
+        save_model(f"examples/cnn/model_saves/model_epoch_{e}", model)
 
 
 if __name__ == "__main__":

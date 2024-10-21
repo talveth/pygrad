@@ -82,14 +82,14 @@ class RMSProp:
 
     def step(self, loss):
         for i, param in enumerate(self.model_parameters):
-            param.grad                      = np.mean(loss.weights[i].grad, axis=0, keepdims=True)
+            param.grad                      = np.sum(loss.weights[i].grad, axis=0, keepdims=True)
             self.model_vs[i].grad           = self.beta * self.model_vs[i].grad + (1-self.beta) * (param.grad**2)
-            param.value                     = param.value - (self.lr/np.sqrt(self.model_vs[i].grad + self.eps)) * param.grad
+            param.value                     = param.value - (self.lr*param.grad)/(np.sqrt(self.model_vs[i].grad) + self.eps)
 
     def step_single(self, loss, batch_size, modify:bool=False):
         if not modify:
             for i, param in enumerate(self.model_parameters):
-                param.grad      += np.mean(loss.weights[i].grad, axis=0, keepdims=True)
+                param.grad      += np.sum(loss.weights[i].grad, axis=0, keepdims=True)
         elif modify:
             for i, param in enumerate(self.model_parameters):
                 self.model_vs[i].grad           = self.beta * self.model_vs[i].grad + (1-self.beta) * ((param.grad)**2)
