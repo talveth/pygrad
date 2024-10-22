@@ -272,9 +272,7 @@ class Tensor:
         N   = self.value.shape[axis]
         if N == 1: return 0 * self
         d2  = (self - self.mean(axis=axis,keepdims=True))**2  # abs is for complex `a`
-        print(d2.value)
         var = d2.mean(axis=axis, keepdims=keepdim)            # no bias correction done here
-        print(var.value)
         new = var**0.5
         return new
 

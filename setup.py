@@ -20,8 +20,7 @@ setup(
     author="Danila Kurganov",             # Your name
     author_email="dan.kurg@gmail.com",  # Your email
     description="Autograd in NumPy",
-    long_description=open("README.md").read(),  # Optional: Long description from README
-    # long_description_content_type="text/markdown",
+    long_description=open("README.md").read(),
     url="https://github.com/baubels/danila-grad",
     classifiers=[
         "Programming Language :: Python :: 3",
