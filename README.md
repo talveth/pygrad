@@ -24,7 +24,7 @@ The main component is the `Tensor` class supporting common math operations shown
 | Architectures    | DNN, CNN, Vanila Transformer                               | NumPy/Numba  |
 
 
-##### Usage
+#### Usage
 
 Tensors accept the same input value as a NumPy array. Create them with Tensor(value) or tensor.array(value).
 
@@ -41,3 +41,7 @@ This calculates `y.grad = 1` and `x.grad = 6`.
 
 To view the computational graph, use with `y.topo` or `y.weights`, depending on whether or not to view leaf tensors.
 Additional examples can be found under `examples/`.
+
+#### Citation
+
+If you find this project helpful in your research or work, I kindly ask that you cite it. Thank you!
