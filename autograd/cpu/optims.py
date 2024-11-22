@@ -3,6 +3,9 @@ import numpy as np
 import copy
 
 class SGD:
+    """
+    Vanilla Gradient Descent.
+    """
     def __init__(self, model_parameters:list, lr:float=1e-5):
         self.model_parameters   = model_parameters
         self.lr                 = lr
@@ -28,6 +31,9 @@ class SGD:
 
 
 class SGD_Momentum:
+    """
+    Gradient Descent with Momentum.
+    """
     def __init__(self, model_parameters:list, beta:float=0.9, lr:float=1e-5):
         self.model_parameters   = model_parameters
         self.model_momentums    = copy.deepcopy(model_parameters)
@@ -63,6 +69,7 @@ class SGD_Momentum:
 
 
 class RMSProp:
+    """RMS Prop."""
     def __init__(self, model_parameters:list, beta:float=0.9, lr:float=1e-5):
         self.model_parameters   = model_parameters
         self.model_vs           = copy.deepcopy(model_parameters)
@@ -97,6 +104,7 @@ class RMSProp:
 
 
 class Adam:
+    """Adam Optimizer."""
     def __init__(self, model_parameters:list, beta1:float=0.9, beta2:float=0.999, eps=1e-8, lr:float=1e-5):
         self.model_parameters   = model_parameters
         self.model_momentums    = copy.deepcopy(model_parameters)

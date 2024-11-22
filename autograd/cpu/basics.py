@@ -7,25 +7,10 @@ from typing import Union
 PRECISION = np.float64
 
 
-class ReLU:
-    def __init__(self, label:Union[None,int,str]="ReLU"):
-        self.label  = label
-        self.value  = None
-        self.tensor = None
-
-    def __repr__(self) -> str:
-        if self.tensor is None:
-            raise "Unable to __repr__, do a forward pass first."
-        return f"ReLU=(name={self.label})"
-
-    def __call__(self, x):
-        out = x.relu()
-        out.label = self.label
-        self.tensor = out
-        return self.tensor
-
-
 class Dropout:
+    """
+    Performs Dropout with specified rate.
+    """
     def __init__(self, rate:float=0.1):
         assert isinstance(rate, float),     ""
         assert rate >= 0 and rate <= 1,     ""
@@ -45,6 +30,9 @@ class Dropout:
 
 
 class AddNorm:
+    """
+    Performs AddNorm on an input x and skip connection value skip.
+    """
     def __init__(self, gain:float=0.1, epsilon:float=1e-9, dtype=PRECISION):
         self.dtype      = dtype
         self.gain       = np.array([gain]).astype(self.dtype)
@@ -63,7 +51,16 @@ class AddNorm:
 
 
 class Linear:
+    """
+    Linear 2D layer. Performs Wx + B on an input x.
+    
+    Inputs and outputs are in 3D: (bs, h, w)
+    Kaiming Uniform initialization.
+    """
     def __init__(self, i_dim:int, o_dim:int, label:Union[None,int,str]="Linear", bias:bool=True, dtype=PRECISION) -> None:
+        """
+        
+        """
         self.dtype  = dtype
         self.i_dim  = i_dim
         self.o_dim  = o_dim
@@ -112,6 +109,9 @@ class Linear:
 
 
 class Softmax:
+    """
+    Performs Softmax.
+    """
     def __init__(self, label:Union[None,int,str]="Softmax"):
         self.label  = label
         self.tensor = None
@@ -131,6 +131,9 @@ class Softmax:
 
 
 class Flatten:
+    """
+    Flattens an input by reshaping it into a 1D Tensor.
+    """
     def __init__(self, label:Union[None,int,str]="Flatten"):
         self.label  = label
         self.value  = None
@@ -151,6 +154,11 @@ class Flatten:
 
 
 class Conv2D:
+    """
+    Performs Conv2D from an input dimension i_dim to an output dimension o_dim using a kernel (kH, kW).
+
+    Only single strides are performed. No output padding.
+    """
     def __init__(self, o_dim:int, i_dim:int, kH:int, kW:int, label:Union[None,int,str]="Conv2D", bias:bool=True):
         self.o_dim  = o_dim
         self.i_dim  = i_dim

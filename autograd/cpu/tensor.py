@@ -6,11 +6,10 @@ from .numba_ops import softmax_grad
 import copy
 
 
-def array(*args, **kwargs):
-    return Tensor(*args, **kwargs)
-
-
 class Tensor:
+    """
+    The main Tensor object.
+    """
     def __init__(self, value:Union[list, np.ndarray], label:str="",  dtype=np.float64, learnable:bool=True, leaf:bool=False, _prev:tuple=()) -> None:
         """
         Initializes a Tensor. 
@@ -24,24 +23,23 @@ class Tensor:
         Tensors store operations performed, allowing them to calculate the gradients of all Tensors in their 
         computational graph via .backward().
         
-        Initialization:
-            value: The input Tensor value. Is either a numeric value or a list/np.ndarray. 
-                Complex or boolean values are not supported. Value is automatically recast to dtype.
-            label: A string giving the Tensor an identifiable name. Defaults to "".
-            dtype: The dtype to cast the input value. Must be one of np.float16, np.float32, np.float64, np.float128.
-            
-            (optional)
-            learnable: A boolean indicating whether or not to compute gradients for _prev Tensors this Tensor has.
-                    Setting this to False means the computational graph will stop at this node.
-                    This node will still have gradients computed.
-            leaf: A boolean indicating if the Tensor is to be considered a leaf node in the computational graph.      
-                Leaf nodes will have gradients tracked, but won't appear as a weight in self.weights.
-            
-            _prev: An empty tuple or a tuple of Tensor objects, referencing objects to pass gradients 
-                too when doing a backwards pass. _prev is automatically filled when performing a 
-                tensor method, manual specification is not necessary.        
-        """
+        :param value: The input Tensor value. 
+        :type value: Is either a numeric value or a list/np.ndarray. Complex or boolean values are not supported. Value is automatically recast to dtype.
+        :param label: A string giving the Tensor an identifiable name. Defaults to "".
+        :param dtype: The dtype to cast the input value. Must be one of np.float16, np.float32, np.float64, np.float128.
         
+        :param learnable: Optional. A boolean indicating whether or not to compute gradients for _prev Tensors this Tensor has.
+                Setting this to False means the computational graph will stop at this node.
+                This node will still have gradients computed.
+        :param leaf: Optional. A boolean indicating if the Tensor is to be considered a leaf node in the computational graph.      
+            Leaf nodes will have gradients tracked, but won't appear as a weight in self.weights.
+        
+        :param _prev: Optional. An empty tuple or a tuple of Tensor objects, referencing objects to pass gradients 
+            too when doing a backwards pass. _prev is automatically filled when performing a 
+            tensor method, manual specification is not necessary.        
+        
+        :return: A produced Tensor.
+        """
         self._is_valid_value(value)
         if not isinstance(_prev, tuple):
             raise TypeError(f"Expected '_prev' to be of type 'tuple', but got {type(_prev).__name__}")
@@ -87,14 +85,17 @@ class Tensor:
             return f"Tensor=(name={self.label}, shape={self.shape}, dtype={self.dtype})"
 
     def __getitem__(self, idcs):
+        """
+        Fetches self.value[idcs]. Identical to NumPy syntax for fetching indices.
+        """
         return self.value[idcs]
 
     def reset_grad(self):
-        """Resets the gradient of the Tensor."""
+        """Resets the gradient of the Tensor to 0, maintaining all other attributes."""
         self.grad  = np.zeros_like(self.value).view(self.dtype)
 
     def new_value(self, x):
-        """Assigns a new value to the Tensor and resets gradients without changing computational graphs."""
+        """Assigns a new value to the Tensor and resets gradients to 0 without changing computational graph topology."""
         self._is_valid_value(x)
         self.value = x
         self.shape = self.value.shape
@@ -125,6 +126,12 @@ class Tensor:
         return new_grad
 
     def __add__(self, other):
+        """
+        Performs self.Tensor + other, returning a new Tensor object.
+
+        :param other: the object to add with shape broadcastable to self.shape.
+        :type other: (int, float, np.integer, np.floating, np.ndarray, list, Tensor)
+        """
         self._is_valid_value(other, with_tensor=True)
         if isinstance(other, (float, int, np.integer, np.floating)):
             other   = np.array(other)
@@ -141,6 +148,9 @@ class Tensor:
         return self + other
 
     def __neg__(self):
+        """
+        Performs -1*self.Tensor, returning a new Tensor object.
+        """
         new = Tensor(value=-1.0*self.value, _prev=(self,), leaf=True)
         def bpass():
             self.grad               = self.grad + -1.0 * new.grad
@@ -155,15 +165,12 @@ class Tensor:
 
     def sum(self, axis:Union[None,int,tuple]=None, keepdims:bool=False):
         """
-        Returns a Tensor with value equal to the sum of all the Tensor values.
-
-        If over_batch == True, the first dimension is assumed to be the batch 
-        dimension, and instead the sum is taken over the other dimensions.
+        Performs a summation on self.value according to axis chosen. Returns a new Tensor object.
         
-        over_batch: boolean
-        axis: None, int, or tuple of ints, suitable for self.shape. 
-                    If None, sum is performed over all axes.
-        keepdims:bool, False
+        :param axis:     Determines which axis to sum self.value over. Defaults to None: summing over all axes.
+        :type axis:      None (default), int, or tuple of ints.
+        :param keepdims: Indicates whether to keep the current shape of self after summation.
+        :type param:     bool, False (default).
         """
         assert isinstance(keepdims, bool), "keepdims must be a boolean."
         assert isinstance(axis, (int, tuple, type(None))), "axis must be None, an int, or a tuple."
@@ -178,14 +185,13 @@ class Tensor:
             else:
                 new_grad    = np.expand_dims(new.grad, axis=axis)
                 self.grad  += np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal')
-            # print(new.grad.shape, self.shape, self.grad.shape)
-            # self_grad   = 
-            # self.grad  += 
-            # self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal')
         new.bpass       = bpass
         return new
 
     def __pow__(self, n:int):
+        """
+        
+        """
         new = Tensor(value=self.value**n, _prev=(self,), leaf=True)
         def bpass():
             self.grad                       += np.einsum('...,...->...', (n*self.value**(n-1)), new.grad, optimize='optimal')
@@ -502,8 +508,26 @@ class Tensor:
         new.bpass                               = bpass
         return new
 
-    def create_graph(self):
-        """Creates an reverse-ordered topological graph."""
+    def create_graph(self) -> tuple[list,list]:
+        """
+        Creates two reverse-ordered topological graphs: topo and weights.
+        
+        _topo_ is the full backwards pass computational graph, which includes all 
+        intermediary Tensors. _weights_ is a subgraph, containing only the Tensors
+        containing learnable weights.
+        
+        For example, performing y = x**2 + 1 will create the following graphs:
+        
+        - topo, containing: x**2 + 1, x**2, 1, and x.
+        - weights, containing: x
+        
+        although all nodes in topo were responsible for producing a gradient for x, 
+        only the x node contains weights which would need to be updated by this gradient.
+
+        Both graphs are lists that perform a pre-order traversal starting at self as the root node.
+        
+        :return: topo[list], weights[list]
+        """
         topo = []
         weights = []
         visited = set()
@@ -519,10 +543,11 @@ class Tensor:
         build_topo(self)
         return topo, weights
 
-    def backward(self, reset_grad=True) -> list:
+    def backward(self, reset_grad=True) -> None:
         """
-        Computes the gradients of all Tensors in self's computation graph.
-        Self is initialized with a gradient of 1, incrementing all children gradients by this multiplier.
+        Computes the gradients of all Tensors in self's computation graph, storing results in self.topo and self.weights.
+        
+        self is initialized with gradient 1, incrementing all children gradients by this multiplier.
 
         This method first creates two topological graphs of self.
             1. A backwards-pass graph including all Tensors contributing to self.
@@ -531,8 +556,9 @@ class Tensor:
                 current Tensor, ignoring any Tensors that were produced as intermediary
                 values for producing the current Tensor.
         
-        reset_grad: boolean, True means all gradients of the graph will be reset to 0.
-                             False means they will remain untouched.
+        :param reset_grad: Whether or not to reset the current backwards pass gradients.
+        :type boolean:     True means all gradients of the graph will be reset to 0.
+                           False means they will remain untouched.
         """
         self.topo, self.weights = self.create_graph()
         if reset_grad:
@@ -541,3 +567,13 @@ class Tensor:
         self.grad = np.ones_like(self.value, dtype=self.dtype)
         for node in reversed(self.topo):
             node.bpass()
+
+
+def array(*args, **kwargs)->Tensor:
+    """
+    Helper function designed for initializing a `Tensor` object in the same way as a NumPy array.
+    Ensure inputs match those of `Tensor`.
+    
+    :return: A `Tensor` object with fields (*args, **kwargs)
+    """
+    return Tensor(*args, **kwargs)
