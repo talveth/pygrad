@@ -26,7 +26,7 @@ class Tensor:
         :param value: The input Tensor value. 
         :type value: Is either a numeric value or a list/np.ndarray. Complex or boolean values are not supported. Value is automatically recast to dtype.
         :param label: A string giving the Tensor an identifiable name. Defaults to "".
-        :param dtype: The dtype to cast the input value. Must be one of np.float16, np.float32, np.float64, np.float128.
+        :param dtype: The dtype to cast the input value. Must be one of np.bool, np.integer, np.floating.
         
         :param learnable: Optional. A boolean indicating whether or not to compute gradients for _prev Tensors this Tensor has.
                 Setting this to False means the computational graph will stop at this node.
@@ -51,8 +51,8 @@ class Tensor:
             raise TypeError(f"Expected 'learnable' to be of type 'bool', but got {type(learnable).__name__}")
         if not isinstance(leaf, bool):
             raise TypeError(f"Expected 'leaf' to be of type 'bool', but got {type(leaf).__name__}")      
-        if not isinstance(dtype(), (np.float16, np.float32, np.float64, np.float128)):
-            raise TypeError(f"Expected 'dtype' to be of type (np.float16,np.float32,np.float64,np.float128), but got {dtype}")
+        if not isinstance(dtype(), (np.floating)):
+            raise TypeError(f"Expected 'dtype' to be of type (np.floating), but got {dtype}")
 
         self.dtype          = dtype
         self.value          = np.array(value, dtype=self.dtype)
@@ -74,9 +74,9 @@ class Tensor:
 
     def _valid_values(self, with_tensor:bool=False):
         if not with_tensor:
-            return (int, float, np.integer, np.floating, np.ndarray, list)
+            return (int, float, np.integer, np.floating, np.ndarray, np.bool, list)
         else:
-            return (int, float, np.integer, np.floating, np.ndarray, list, Tensor)
+            return (int, float, np.integer, np.floating, np.ndarray, np.bool, list, Tensor)
 
     def __repr__(self) -> str:
         if self.shape == ():
@@ -134,9 +134,9 @@ class Tensor:
         """
         self._is_valid_value(other, with_tensor=True)
         if isinstance(other, (float, int, np.integer, np.floating)):
-            other   = np.array(other)
-            other   = Tensor(other, learnable=False, leaf=True)
-        new = Tensor(value=self.value + other.value, _prev=(self, other), leaf=True)
+            other   = np.array(other, dtype=self.dtype)
+            other   = Tensor(other, learnable=False, leaf=True, dtype=self.dtype)
+        new = Tensor(value=self.value + other.value, _prev=(self, other), leaf=True, dtype=self.dtype)
 
         def bpass():
             other.grad += self._broadcast_addgrad(other.grad, new.grad.copy())
@@ -151,7 +151,7 @@ class Tensor:
         """
         Performs -1*self.Tensor, returning a new Tensor object.
         """
-        new = Tensor(value=-1.0*self.value, _prev=(self,), leaf=True)
+        new = Tensor(value=-1.0*self.value, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             self.grad               = self.grad + -1.0 * new.grad
         new.bpass = bpass
@@ -177,33 +177,33 @@ class Tensor:
 
         if axis is None:
             axis = tuple([i for i in range(len(self.shape))])
-        new_val             = np.sum(self.value, axis=axis, keepdims=keepdims)
-        new                 = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True)
+        new_val             = np.sum(self.value, axis=axis, keepdims=keepdims, dtype=self.dtype)
+        new                 = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True, dtype=self.dtype)
         def bpass():
             if keepdims:
-                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal')
+                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal', dtype=self.dtype)
             else:
                 new_grad    = np.expand_dims(new.grad, axis=axis)
-                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal')
+                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal', dtype=self.dtype)
         new.bpass       = bpass
         return new
 
-    def __pow__(self, n:int):
+    def __pow__(self, n:float):
         """
-        
+        Raises the Tensor to a power of n:float.
         """
-        new = Tensor(value=self.value**n, _prev=(self,), leaf=True)
+        new = Tensor(value=self.value**n, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
-            self.grad                       += np.einsum('...,...->...', (n*self.value**(n-1)), new.grad, optimize='optimal')
+            self.grad                       += np.einsum('...,...->...', (n*self.value**(n-1)), new.grad, optimize='optimal', dtype=self.dtype)
         new.bpass = bpass
         return new
 
     def __matmul__(self, other):
         if isinstance(other, (np.ndarray)):
-            other = Tensor(value=np.array(other, dtype=self.dtype), label="other", learnable=True, leaf=False)
+            other = Tensor(value=np.array(other, dtype=self.dtype), label="other", learnable=True, leaf=False, dtype=self.dtype)
         assert isinstance(other, Tensor), "other must be a Tensor"
         new_val         = self.value @ other.value
-        new             = Tensor(value=new_val, _prev=(self, other), leaf=True)
+        new             = Tensor(value=new_val, _prev=(self, other), leaf=True, dtype=self.dtype)
 
         def bpass():
             # self.grad   = self.grad + new.grad @ np.transpose(other.value, (0,2,1))
@@ -219,7 +219,7 @@ class Tensor:
         """
         assert isinstance(shape, tuple), "reshape input must be a tuple"
         new_val = np.reshape(self.value, shape)
-        new     = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True)
+        new     = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True, dtype=self.dtype)
         def bpass():
             self.grad   += np.reshape(new.grad, self.value.shape)
         new.bpass       = bpass
@@ -237,7 +237,7 @@ class Tensor:
         """
         assert isinstance(axes, tuple), "axes must be a tuple"
         new_val     = np.transpose(self.value, axes)
-        new         = Tensor(value=new_val, _prev=(self,), leaf=True)
+        new         = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             self.grad   += np.transpose(new.grad, self._invert_axes(axes))
         new.bpass       = bpass
@@ -253,8 +253,8 @@ class Tensor:
         assert isinstance(axis, int),       "axis must be an integer"
         assert isinstance(keepdims, bool),  "keepdims must be a boolean value"
 
-        new_val = np.mean(self.value, axis=axis, keepdims=keepdims)
-        new     = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True)
+        new_val = np.mean(self.value, axis=axis, keepdims=keepdims, dtype=self.dtype)
+        new     = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True, dtype=self.dtype)
 
         def bpass():
             if keepdims:
@@ -300,14 +300,14 @@ class Tensor:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, np.integer, np.floating)):
-            other = Tensor(other, learnable=True, leaf=True)
+            other = Tensor(other, learnable=True, leaf=True, dtype=self.dtype)
         assert isinstance(other, Tensor), "Ensure that the multiplier is a Tensor."
         
         if np.broadcast_shapes(self.shape, other.shape) != ():
             assert np.broadcast_shapes(self.shape, other.shape), "Shapes not broadcastable. Ensure shapes are broadcastable"
         
         new_val = np.einsum('...,...->...', self.value, other.value, optimize='optimal')
-        new = Tensor(value=new_val, _prev=(self, other), leaf=True)
+        new = Tensor(value=new_val, _prev=(self, other), leaf=True, dtype=self.dtype)
 
         def bpass():
             new_grad    = np.einsum('...,...->...', other.value, new.grad, optimize='optimal')
@@ -334,7 +334,7 @@ class Tensor:
         """
         if len(self.shape) <= 1:
             return self
-        new                          = Tensor(value=np.einsum('...ij->...ji', self.value), _prev=(self,), label=f"{self.label}.T", leaf=True)
+        new                          = Tensor(value=np.einsum('...ij->...ji', self.value), _prev=(self,), label=f"{self.label}.T", leaf=True, dtype=self.dtype)
         def bpass():
             self.grad               += np.einsum('...ij->...ji', new.grad, optimize='optimal')
         new.bpass                    = bpass
@@ -350,10 +350,10 @@ class Tensor:
         assert isinstance(mask_idcs, (tuple, np.ndarray)), "Ensure that mask_idcs is of type tuple."
         new_val             = copy.deepcopy(self.value)
         new_val[mask_idcs]  = value
-        new                 = Tensor(value=new_val, _prev=(self,), leaf=True)
+        new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
 
         def bpass():
-            ones_arr        = np.ones_like(self.value)
+            ones_arr        = np.ones_like(self.value, dtype=self.dtype)
             ones_arr[mask_idcs] = value
             self.grad      += ones_arr * new.grad
         new.bpass = bpass
@@ -363,7 +363,7 @@ class Tensor:
         """
         Applies a point-wise ReLU to the Tensor. Outputs a new Tensor copy.
         """
-        new = Tensor(value=np.maximum(0, self.value), _prev=(self,), leaf=True)
+        new = Tensor(value=np.maximum(0, self.value), _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             grad_mat                = np.copy(self.value)
             grad_mat[grad_mat<=0]   = 0.0
@@ -378,7 +378,7 @@ class Tensor:
         """
         ex, emx = np.exp(self.value), np.exp(-self.value)
         tanh_val= (ex-emx)/(ex+emx)
-        new     = Tensor(value=tanh_val, _prev=(self,), leaf=True)
+        new     = Tensor(value=tanh_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             self.grad   += np.einsum('...,...->...', (1-tanh_val**2), new.grad, optimize='optimal')
         new.bpass = bpass
@@ -400,7 +400,7 @@ class Tensor:
         denominator         = np.sum(numerator, axis=-1, keepdims=True)
         new_val             = np.divide(numerator, denominator) # (..., n, k)
         new_val[np.all(np.isclose(self.value, -1e9), axis=-1)] = 1/self.value.shape[-1]
-        new                 = Tensor(value=new_val, _prev=(self,), leaf=True)    # 
+        new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)    # 
         w                   = new_val.shape[-1]
         
         def bpass():
@@ -437,7 +437,7 @@ class Tensor:
         else:
             pass
         new_val             = 1/(1 + np.exp(-self.value))
-        new                 = Tensor(value=new_val, _prev=(self,), leaf=True)
+        new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             self.grad      += new_val * (1-new_val) * new.grad
         new.bpass           = bpass
@@ -451,7 +451,7 @@ class Tensor:
         """
         assert np.min(self.value) >= 0,      "Ensure the value of self is non-negative before logging"
         log_val             = np.log(self.value)
-        new                 = Tensor(value=log_val, _prev=(self,), leaf=True)
+        new                 = Tensor(value=log_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             multiplier      = 1/self.value
             self.grad      += multiplier * new.grad
@@ -486,7 +486,7 @@ class Tensor:
             for j in range(W-kW+1):
                 for c in range(outC):
                     output_np[:,c,i,j]  = np.einsum('i...->i', self.value[:,c,:,:,:] * other.value[:,:,i:i+kH,j:j+kW], optimize='optimal')
-        new                             = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True)
+        new                             = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True, dtype=self.dtype)
 
         def bpass():
             # using Pytorch convention here:
