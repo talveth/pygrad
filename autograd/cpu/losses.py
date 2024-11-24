@@ -4,6 +4,9 @@ import numpy as np
 
 
 class BCELoss:
+    """
+    Binary Cross Entropy Loss.
+    """
     def __init__(self, label="BCELoss"):
         # expects (B, 1, 1)
         self.label  = label
@@ -12,6 +15,15 @@ class BCELoss:
         return f"BCELoss=(name={self.label})"
 
     def __call__(self, pred, target):
+        """
+        Computes the BCE on pred and target, summing over the batch dimension.
+
+        :param pred: A Tensor of shape (batch_size, 1, 1)
+                     Values in [0,1]
+        :param target: A Tensor of shape (batch_size, 1, 1)
+                     Values in {0,1}
+        """
+
         assert isinstance(pred, (Tensor)), "Ensure the prediction is of type Tensor"
         assert isinstance(target, (Tensor)), "Ensure the target is of type Tensor"
         assert len(pred.shape)      == 3, "Ensure the prediction shape is 3, (batch_size, 1, 1)"
@@ -21,18 +33,29 @@ class BCELoss:
         assert np.max(pred.value)   <= 1 and np.min(pred.value) >= 0, "Ensure predictions have value in [0,1]"
         assert np.max(target.value) <= 1 and np.min(target.value) >= 0, "Ensure targets have values in {0,1}"
         outp          = target * pred.log() + (1-target) * ((1-pred).log())       # is batched
-        loss          = (-1/pred.shape[0]) * outp.sum(axis=(0,1,2))            # sums in batch dimension also
+        loss          = (-1/pred.shape[0]) * outp.sum(axis=(0,1,2))               # sums in batch dimension also
         return loss
 
 
 class CCELoss:
+    """
+    Categorical Cross Entropy Loss.
+    """
     def __init__(self, label="CCELoss"):
         self.label = label
     
     def __repr__(self):
         return f"CCELoss=(name={self.label})"
     
-    def __call__(self, pred, target, mask:bool=False):
+    def __call__(self, pred, target, mask:bool=False)->Tensor:
+        """
+        Performs CCE on pred and target, with an optional mask.
+
+        :param pred: A Tensor of shape (batch_size, 1, w) with values in [0,1]
+        :param target: A Tensor of shape (batch_size, 1, w) with values in {0,1}
+        :param mask: A boolean. If true, the CCE is only computed across values 
+                     where the target has an output in dimension -1.
+        """
         assert isinstance(pred, (Tensor)),          "Ensure the prediction is of type Tensor"
         assert isinstance(target, (Tensor)),        "Ensure the target is of type Tensor"
         assert len(pred.shape)      == 3,           f"Ensure the prediction shape is 3, (batch_size, 1, w), got: {pred.shape}"
