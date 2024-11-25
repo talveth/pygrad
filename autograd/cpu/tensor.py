@@ -1,4 +1,5 @@
 
+from __future__ import annotations
 from typing import Union
 
 import numpy as np
@@ -90,14 +91,16 @@ class Tensor:
         """
         return self.value[idcs]
 
-    def reset_grad(self):
+    def reset_grad(self)->None:
         """Resets the gradient of the Tensor to 0, maintaining all other attributes."""
         self.grad  = np.zeros_like(self.value).view(self.dtype)
 
-    def new_value(self, x):
-        """Assigns a new value to the Tensor and resets gradients to 0 without changing computational graph topology."""
+    def new_value(self, x)->None:
+        """
+        Assigns a new value to the Tensor, Tensor.value = x, and resets gradients to 0 without changing computational graph topology.
+        """
         self._is_valid_value(x)
-        self.value = x
+        self.value = np.array(x, self.dtype)
         self.shape = self.value.shape
         self.grad  = np.zeros_like(self.value).view(self.dtype)
 
@@ -110,7 +113,7 @@ class Tensor:
         shape2_broadcasts = np.array(broadcast)//np.array(sh2)
         return shape1_broadcasts, shape2_broadcasts
 
-    def _broadcast_addgrad(self, grad_to_change, new_grad):
+    def _broadcast_addgrad(self, grad_to_change, new_grad)->np.ndarray:
         sh1b, _     = self._determine_broadcasting(grad_to_change, new_grad)
         # across all broadcast dimensions, sum new_grad gradient
         for i in range(len(sh1b)):
@@ -125,7 +128,7 @@ class Tensor:
             new_grad = new_grad.reshape(s2[diff:])
         return new_grad
 
-    def __add__(self, other):
+    def __add__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor])->Tensor:
         """
         Performs self.Tensor + other, returning a new Tensor object.
 
@@ -133,7 +136,7 @@ class Tensor:
         :type other: (int, float, np.integer, np.floating, np.ndarray, list, Tensor)
         """
         self._is_valid_value(other, with_tensor=True)
-        if isinstance(other, (float, int, np.integer, np.floating)):
+        if isinstance(other, (float, int, np.integer, np.floating, np.ndarray)):
             other   = np.array(other, dtype=self.dtype)
             other   = Tensor(other, learnable=False, leaf=True, dtype=self.dtype)
         new = Tensor(value=self.value + other.value, _prev=(self, other), leaf=True, dtype=self.dtype)
@@ -144,10 +147,10 @@ class Tensor:
         new.bpass                   = bpass
         return new
 
-    def __radd__(self, other):
+    def __radd__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor])->Tensor:
         return self + other
 
-    def __neg__(self):
+    def __neg__(self)->Tensor:
         """
         Performs -1*self.Tensor, returning a new Tensor object.
         """
@@ -157,13 +160,13 @@ class Tensor:
         new.bpass = bpass
         return new
 
-    def __sub__(self, other):
+    def __sub__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor])->Tensor:
         return self + (-other)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor])->Tensor:
         return (-self) + other
 
-    def sum(self, axis:Union[None,int,tuple]=None, keepdims:bool=False):
+    def sum(self, axis:Union[None,int,tuple]=None, keepdims:bool=False)->Tensor:
         """
         Performs a summation on self.value according to axis chosen. Returns a new Tensor object.
         
@@ -188,17 +191,29 @@ class Tensor:
         new.bpass       = bpass
         return new
 
-    def __pow__(self, n:float):
+    def __pow__(self, n:Union[int,float,np.integer,np.floating])->Tensor:
         """
-        Raises the Tensor to a power of n:float.
+        Raises the Tensor to a power of n.
+
+        :param n: The power value to raise the current Tensor
+        :type param: One of int,float,np.integer,np.floating.
         """
+        assert isinstance(n, (int, float, np.integer, np.floating)), "The value `n` has to be of type int, float, np.integer, or np.floating."
         new = Tensor(value=self.value**n, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             self.grad                       += np.einsum('...,...->...', (n*self.value**(n-1)), new.grad, optimize='optimal', dtype=self.dtype)
         new.bpass = bpass
         return new
 
-    def __matmul__(self, other):
+    def __matmul__(self, other:Union[np.ndarray, Tensor])->Tensor:
+        """
+        Performs matrix multiplication with self and other: self@other.
+
+        Matrix multiplication is performed between the last two dimensions of self and other, broadcasting all those remaining.
+
+        :param other: The matrix to perform matrix multiplication against.
+        :type param: Either a np.ndarray or Tensor of suitable shape.
+        """
         if isinstance(other, (np.ndarray)):
             other = Tensor(value=np.array(other, dtype=self.dtype), label="other", learnable=True, leaf=False, dtype=self.dtype)
         assert isinstance(other, Tensor), "other must be a Tensor"
@@ -206,16 +221,17 @@ class Tensor:
         new             = Tensor(value=new_val, _prev=(self, other), leaf=True, dtype=self.dtype)
 
         def bpass():
-            # self.grad   = self.grad + new.grad @ np.transpose(other.value, (0,2,1))
-            self.grad   += np.einsum('...bj,...kj->...bk', new.grad, other.value, optimize='optimal')
-            # other.grad  = other.grad + np.transpose(self.value, (0,2,1)) @ new.grad
-            other.grad  += np.einsum('...jb,...jk->...bk', self.value, new.grad, optimize='optimal')
+            self.grad   += np.einsum('...bj,...kj->...bk', new.grad, other.value, optimize='optimal', dtype=self.dtype)
+            other.grad  += np.einsum('...jb,...jk->...bk', self.value, new.grad, optimize='optimal', dtype=self.dtype)
         new.bpass       = bpass
         return new
 
-    def reshape(self, shape:tuple):
+    def reshape(self, shape:tuple)->Tensor:
         """
-        Returns a a copy of the Tensor with the same data but reshaped shape.
+        Returns a new Tensor with Tensor.value.shape == shape.
+
+        :param shape: A tuple indicating the new shape self.value has to take.
+        :type param: tuple
         """
         assert isinstance(shape, tuple), "reshape input must be a tuple"
         new_val = np.reshape(self.value, shape)
@@ -225,56 +241,73 @@ class Tensor:
         new.bpass       = bpass
         return new
 
-    def _invert_axes(self, axes:tuple):
+    def _invert_axes(self, axes:tuple)->tuple:
         inverted = [0]*len(axes)
         for i, val in enumerate(axes):
             inverted[val] = i
         return tuple(inverted)
 
-    def transpose(self, axes:tuple):
+    def transpose(self, axes:Union[None, tuple, list])->Tensor:
         """
-        Returns a copy of the Tensor with the same data but transposed axes.
+        Returns a new Tensor with the same data but transposed axes.
+
+        :param axes: If specified, it must be a tuple or list which contains a 
+                     permutation of [0,1,…,N-1] where N is the number of axes of self. 
+                     The ith axis of the returned array will correspond to the axis 
+                     numbered axes[i] of the input. If not specified, defaults to 
+                     the reverse of the order of the axes.
         """
-        assert isinstance(axes, tuple), "axes must be a tuple"
+        assert isinstance(axes, (tuple, list)) or axes is None, "axes must be None or a tuple or list"
         new_val     = np.transpose(self.value, axes)
         new         = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
-            self.grad   += np.transpose(new.grad, self._invert_axes(axes))
+            self.grad   += np.transpose(new.grad, self._invert_axes(axes), dtype=self.dtype)
         new.bpass       = bpass
         return new
 
-    def mean(self, axis:int=-1, keepdims:bool=True):
+    def mean(self, axis:Union[int, tuple, None]=-1, keepdims:bool=True)->Tensor:
         """
-        Returns the average of the Tensor's value along a given axis.
+        Returns a new Tensor with value being the average of self's value along a given axis.
         
-        axis: int, axis to mean along
-        keepdims: bool, whether or not to keep the existing dimensions
+        :param axis: The axis to perform a mean over.
+        :type axis: None, int, tuple of ints
+        :param keepdims: Whether or not to keep the existing dimensions. True is yes.
+        :type keepdims: bool
         """
-        assert isinstance(axis, int),       "axis must be an integer"
+        assert isinstance(axis, int, tuple) or axis is None, "axis must be an integer, tuple of ints, or None"
         assert isinstance(keepdims, bool),  "keepdims must be a boolean value"
 
         new_val = np.mean(self.value, axis=axis, keepdims=keepdims, dtype=self.dtype)
         new     = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True, dtype=self.dtype)
 
         def bpass():
+            if axis is None:
+                c = np.prod(self.shape)
+            elif isinstance(axis, int):
+                c = 1/self.shape[axis]
+            else:
+                c = np.prod([self.shape[ax] for ax in axis])
+
             if keepdims:
-                self.grad += (1/self.shape[axis]) * np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal')
+                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal', dtype=self.dtype)
             else:
                 new_grad = np.expand_dims(new.grad, axis=axis)
-                self.grad += (1/self.shape[axis]) * np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal')
+                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal', dtype=self.dtype)
         new.bpass = bpass
         return new
 
-    def std(self, axis:int, keepdim=True):
+    def std(self, axis:int, keepdim=True)->Tensor:
         """
-        Returns the standard deviation of the Tensor along the specified axis.
-        Bias correction is not performed here.
+        Returns a new Tensor with value being the standard deviation of self along the specified axis.
+        No bias correction performed.
 
-        axis: int
-        keepdim: bool
+        :param axis: axis over which to perform a standard deviation over
+        :type axis: integer
+        :param keepdim: whether or not to keep the axis dimension as self
+        :type keepdim: bool (defaults to True)
         """
         assert isinstance(axis, int),       "The specified axis must be an integer."
-        assert isinstance(keepdim, bool),   ""
+        assert isinstance(keepdim, bool),   "Ensure keepdim is a boolean"
         N   = self.value.shape[axis]
         if N == 1: return 0 * self
         d2  = (self - self.mean(axis=axis,keepdims=True))**2  # abs is for complex `a`
@@ -298,56 +331,71 @@ class Tensor:
             new_grad = new_grad.reshape(s2[diff:])
         return new_grad
 
-    def __mul__(self, other):
-        if isinstance(other, (int, float, np.integer, np.floating)):
+    def __mul__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor])->Tensor:
+        """
+        Performs multiplication between the values of self and other. 
+        If self and other are matrices, this is equivalent to the hadamard product.
+        
+        :param other: The value to multiply against. Must be broadcastable in shape to self.
+        :type other:  One of int, float, np.integer, np.floating, np.ndarray, or Tensor.
+        """
+        if isinstance(other, (int, float, np.integer, np.floating, np.ndarray)):
             other = Tensor(other, learnable=True, leaf=True, dtype=self.dtype)
         assert isinstance(other, Tensor), "Ensure that the multiplier is a Tensor."
         
         if np.broadcast_shapes(self.shape, other.shape) != ():
             assert np.broadcast_shapes(self.shape, other.shape), "Shapes not broadcastable. Ensure shapes are broadcastable"
         
-        new_val = np.einsum('...,...->...', self.value, other.value, optimize='optimal')
+        new_val = np.einsum('...,...->...', self.value, other.value, optimize='optimal', dtype=self.dtype)
         new = Tensor(value=new_val, _prev=(self, other), leaf=True, dtype=self.dtype)
 
         def bpass():
-            new_grad    = np.einsum('...,...->...', other.value, new.grad, optimize='optimal')
+            new_grad    = np.einsum('...,...->...', other.value, new.grad, optimize='optimal', dtype=self.dtype)
             self.grad  += self._broadcast_mulgrad(self.grad, new_grad)
-            new_grad    = np.einsum('...,...->...', self.value, new.grad, optimize='optimal')
+            new_grad    = np.einsum('...,...->...', self.value, new.grad, optimize='optimal', dtype=self.dtype)
             other.grad  += self._broadcast_mulgrad(other.grad, new_grad)
           
         new.bpass = bpass
         return new
 
-    def __rmul__(self, other):
+    def __rmul__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor]):
         return self * other
 
-    def __truediv__(self, other):
+    def __truediv__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor]):
         return self * other**-1
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other:Union[int, float, np.integer, np.floating, np.ndarray, Tensor]):
         return self**-1 * other
 
     @property
-    def T(self):
+    def T(self) -> Tensor:
         """
-        Transposes the last two dimensions of self.
+        Transposes self.value.
+
+        If self is 0 or 1 dimensional, no self is returned without modification.
+        Otherwise, the last two dimensions of self are flipped.
         """
         if len(self.shape) <= 1:
             return self
-        new                          = Tensor(value=np.einsum('...ij->...ji', self.value), _prev=(self,), label=f"{self.label}.T", leaf=True, dtype=self.dtype)
+        new                          = Tensor(value=np.einsum('...ij->...ji', self.value), _prev=(self,), 
+                                              label=f"{self.label}.T", leaf=True, dtype=self.dtype)
         def bpass():
-            self.grad               += np.einsum('...ij->...ji', new.grad, optimize='optimal')
+            self.grad               += np.einsum('...ij->...ji', new.grad, optimize='optimal', dtype=self.dtype)
         new.bpass                    = bpass
         return new
 
-    def mask_idcs(self, mask_idcs:tuple, value:float=0.0):
+    def mask_idcs(self, mask_idcs:tuple, value:float=0.0)->Tensor:
         """
-        Applies a mask to the Tensor via an array. Creates a copy of the Tensor.
+        Applies a mask to the Tensor via an array indicating indices of self.value. 
+        Outputs a new Tensor.
 
-        mask_idcs: tuple of indices from which to mask values of self.
-        value: The mask value. Defaults to 0.0.
+        :param mask_idcs: tuple of indices from which to mask values of self.
+        :type mask_idcs: tuple
+        :param value: The mask value. Defaults to 0.0 indicating that chosen indices are now set to 0.
+        :type value: float
         """
         assert isinstance(mask_idcs, (tuple, np.ndarray)), "Ensure that mask_idcs is of type tuple."
+        assert isinstance(value, (float)), "Ensure value is of type float."
         new_val             = copy.deepcopy(self.value)
         new_val[mask_idcs]  = value
         new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
@@ -359,32 +407,32 @@ class Tensor:
         new.bpass = bpass
         return new
 
-    def relu(self):
+    def relu(self)->Tensor:
         """
-        Applies a point-wise ReLU to the Tensor. Outputs a new Tensor copy.
+        Applies a point-wise ReLU to the Tensor values. Outputs a new Tensor.
         """
         new = Tensor(value=np.maximum(0, self.value), _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             grad_mat                = np.copy(self.value)
             grad_mat[grad_mat<=0]   = 0.0
             grad_mat[grad_mat>0]    = 1.0
-            self.grad               += np.einsum('...,...->...', grad_mat, new.grad, optimize='optimal')
+            self.grad               += np.einsum('...,...->...', grad_mat, new.grad, optimize='optimal', dtype=self.dtype)
         new.bpass                   = bpass
         return new
 
-    def tanh(self):
+    def tanh(self)->Tensor:
         """
-        Applies a point-wise tanh to the Tensor. Outputs a new Tensor copy.
+        Applies a point-wise tanh activation to the Tensor. Outputs a new Tensor.
         """
         ex, emx = np.exp(self.value), np.exp(-self.value)
         tanh_val= (ex-emx)/(ex+emx)
         new     = Tensor(value=tanh_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
-            self.grad   += np.einsum('...,...->...', (1-tanh_val**2), new.grad, optimize='optimal')
+            self.grad   += np.einsum('...,...->...', (1-tanh_val**2), new.grad, optimize='optimal', dtype=self.dtype)
         new.bpass = bpass
         return new
 
-    def softmax(self):
+    def softmax(self)->Tensor:
         """
         Applies softmax to self. Softmax is performed on the last axis.
         
@@ -409,9 +457,9 @@ class Tensor:
                     return arr[tuple([np.newaxis] * num_axes + [slice(None)] * arr.ndim)]
                 
                 np_eye          = add_newaxis(np.eye(w), len(new_val.shape)-2)
-                diag_elem       = np.einsum('...hn,...inm->...hnm', new_val, np_eye, optimize='optimal')
+                diag_elem       = np.einsum('...hn,...inm->...hnm', new_val, np_eye, optimize='optimal', dtype=self.dtype)
                 new_val_reshape = np.expand_dims(new_val, axis=-2)
-                nondiags        = np.einsum('...ji,...jk->...ik', new_val_reshape, new_val_reshape, optimize='optimal')
+                nondiags        = np.einsum('...ji,...jk->...ik', new_val_reshape, new_val_reshape, optimize='optimal', dtype=self.dtype)
                 sum_grad        = diag_elem-nondiags
                 new_grad        = np.transpose(new.grad[...,np.newaxis,:,:], (0,1,2,4,3))
                 pre_self_grad       = sum_grad@new_grad
@@ -426,16 +474,15 @@ class Tensor:
         new.bpass           = bpass
         return new
 
-    def sigmoid(self):
+    def sigmoid(self)->Tensor:
         """
-        Applies sigmoid to self.
+        Applies sigmoid activation to self, returning a new Tensor.
 
-        Self has to be of shape (..., 1).
+        self.value has to be of shape (..., 1).
         """
         if self.shape != ():
             assert self.shape[-1] == 1,         "Ensure the input has shape (..., 1)"
-        else:
-            pass
+
         new_val             = 1/(1 + np.exp(-self.value))
         new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
@@ -443,7 +490,7 @@ class Tensor:
         new.bpass           = bpass
         return new
 
-    def log(self):
+    def log(self)->Tensor:
         """
         Applies the natural logarithm to self.
 
@@ -458,17 +505,20 @@ class Tensor:
         new.bpass           = bpass
         return new
 
-    def conv2D(self, other):
+    def conv2D(self, other:Tensor)->Tensor:
         """
         Applies a 2D convolution on other using self as the kernel.
         Strides are set to 1 by default, with no padding.
+        Output a new Tensor.
 
         If self.shape = (1, out_channels, in_channels, kH, kW)
             other.shape = (bs, in_channels, H, W)
             output.shape = (bs, out_channels, H-kH+1, W-kW+1)
 
-        other: 4D Tensor.
+        :param other: A 4D Tensor.
+        :type other: Tensor.
         """
+        assert isinstance(other, Tensor),   "Other must be a Tensor."
         assert len(other.shape)                 == 4, "Ensure other.shape is 4D: (1, in_channels, H, W)"
         assert len(self.shape)                  == 5, "Ensure self.shape is  5D: (1, out_channels, in_channels, kH, kW)"
         assert other.shape[1] == self.shape[2],       "Ensure in_channels of self match in_channels of other."
@@ -499,9 +549,11 @@ class Tensor:
             for i in range(H-kH+1):
                 for j in range(W-kW+1):
                     for c in range(outC):
-                        self.grad[:,c,:,:,:]   += np.einsum('...,...->...', other.value[:,:,i:i+kH, j:j+kW], new.grad[:,c,i,j].reshape(-1,1,1,1), optimize='optimal')  # (b, in_channels, kH, kW)
-                        temp_other_grad_a       = np.einsum('...,...->...', self.value, new.grad[:,c,i,j].reshape(-1,1,1,1,1), optimize='optimal')                     # (b,out_c, in_c, kH, kW)
-                        other.grad[:,:,i:i+kH,j:j+kW] += np.sum(temp_other_grad_a, axis=(1))
+                        self.grad[:,c,:,:,:]   += np.einsum('...,...->...', other.value[:,:,i:i+kH, j:j+kW], 
+                                                            new.grad[:,c,i,j].reshape(-1,1,1,1), optimize='optimal', dtype=self.dtype)  # (b, in_channels, kH, kW)
+                        temp_other_grad_a       = np.einsum('...,...->...', self.value, 
+                                                            new.grad[:,c,i,j].reshape(-1,1,1,1,1), optimize='optimal', dtype=self.dtype)                     # (b,out_c, in_c, kH, kW)
+                        other.grad[:,:,i:i+kH,j:j+kW] += np.sum(temp_other_grad_a, axis=(1), dtype=self.dtype)
 
             # self.grad                          *= self.n_conv_calls
             other.grad                         /= outC
