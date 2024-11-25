@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modules &#8212; danila-grad 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Usage" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h1>
+<section id="tensor">
+<h2>tensor<a class="headerlink" href="#tensor" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">tensor</span></code> module contains the main <cite>Tensor</cite> class responsible for providing automatic differentiation capability.</p>
+<p>The <cite>Tensor</cite> object is a NumPy array holding gradients, supporting a variety of common operations, computing gradients when request.</p>
+<section id="values-and-gradients">
+<h3>Values and Gradients<a class="headerlink" href="#values-and-gradients" title="Link to this heading">¶</a></h3>
+<p>In its simplest form, <cite>Tensors</cite> are initialized with a <cite>value</cite>.
+Values accepted are (non-complex) numeric types, lists, and NumPy arrays.:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">([</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Gradients of each <cite>Tensor</cite> are initialized <code class="docutils literal notranslate"><span class="pre">0</span></code>, stored in <code class="docutils literal notranslate"><span class="pre">.grad</span></code>, and are of the same shape as the passed-in <code class="docutils literal notranslate"><span class="pre">value</span></code>.
+Gradients are <code class="docutils literal notranslate"><span class="pre">0</span></code> until backpropagation is manually called upon either the Tensor or a referee:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+<span class="c1"># -&gt; 1.0 0.0</span>
+</pre></div>
+</div>
+</section>
+<section id="operations-and-topological-graphs">
+<h3>Operations and Topological Graphs<a class="headerlink" href="#operations-and-topological-graphs" title="Link to this heading">¶</a></h3>
+<p><cite>Tensors</cite> support a variety of operations as methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>dunder methods: __add__, __sub__, __neg__, __truediv__, __mul__, __matmul__, __pow__</p></li>
+<li><p>other common ops: sum, reshape, transpose, T, mean, std, conv2D, mask_idcs</p></li>
+<li><p>activations: relu, tanh, sigmoid, softmax</p></li>
+</ul>
+</div></blockquote>
+<p>Applying an operation on a <cite>Tensor</cite> will always produce a new Tensor whose operands are those Tensors’ children.
+By applying successive operations on a <cite>Tensor</cite>, a computational graph is built and stored, thus, each <cite>Tensor</cite>
+has memory of the <cite>Tensors</cite> used to create it.</p>
+<p>A <cite>Tensor</cite>’s computational graph can be generated at any point in time with <cite>.create_graph()</cite>.
+This method returns two computational graphs: a complete topological graph, <code class="docutils literal notranslate"><span class="pre">topo</span></code> and a weights-only graph <code class="docutils literal notranslate"><span class="pre">weights</span></code>.</p>
+<p>Both graphs are reverse-ordered (pre-order traversed) lists of operands performed on <cite>self</cite>, with <cite>self</cite> as root.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">topo</span></code> stores all Tensors that interacted to produce the Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weights</span></code> only Tensors with learnable weights that produced the Tensor.</p></li>
+</ul>
+</div></blockquote>
+<p>The following illustrates their difference:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">topo</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">create_graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In the above, 3 operations are performed on a created <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> x, thus, <code class="docutils literal notranslate"><span class="pre">topo</span></code> is a list with the following
+elements in this order:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>x</p></li>
+<li><p>x**2</p></li>
+<li><p>x**2 + x</p></li>
+<li><p>y=x**2 + x + 1</p></li>
+</ol>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">weights</span></code> however only contains the <code class="docutils literal notranslate"><span class="pre">x</span></code> Tensor, as in producing <code class="docutils literal notranslate"><span class="pre">y</span></code>,
+only one Tensor had learnable weights, with all intermediary Tensors not contributing uniquely to <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p>
+</section>
+<section id="backwards-propagation">
+<h3>Backwards propagation<a class="headerlink" href="#backwards-propagation" title="Link to this heading">¶</a></h3>
+<p>Having a set of <code class="docutils literal notranslate"><span class="pre">weights</span></code> for a Tensor allows performing backpropagation on that Tensor,
+updating only those Tensors whose values directly contribute, ignoring the rest.
+This is how <cite>backward()</cite> is implemented in the library.</p>
+<p>Backpropagation can be directly performed on a Tensor at any time using the <cite>.backward()</cite> method.
+This populates the gradients of all contibuting weights to that Tensor.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+<span class="c1"># -&gt; 3.0</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+<span class="c1"># -&gt; 3.0</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">reset_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+<span class="c1"># -&gt; 11.0</span>
+</pre></div>
+</div>
+<p>Backprop can be applied as many times as needed on a Tensor, however will default to resetting all previous backwards passes.
+To perform backpropagation multiple times on the same computational graph, set <code class="docutils literal notranslate"><span class="pre">reset_grad=False</span></code>.
+Each new backprop adds the previous gradients to the new one, using these added gradients for gradient
+computations further down the computational graph.</p>
+</section>
+<section id="gradient-descent-example">
+<h3>Gradient Descent example<a class="headerlink" href="#gradient-descent-example" title="Link to this heading">¶</a></h3>
+<p>The following shows a simple example of performing gradient descent on the Tensor <code class="docutils literal notranslate"><span class="pre">x=1</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autograd.cpu.tensor</span> <span class="kn">import</span> <span class="n">Tensor</span>
+
+<span class="n">n_iters</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">stepsize</span><span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">x</span>       <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
+    <span class="n">loss_fn</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mf">1.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">loss_fn</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">reset_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">stepsize</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">loss_fn</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="c1"># -&gt; 1.4336... 0.0045...</span>
+</pre></div>
+</div>
+<p>For performing backprop automatically with more complex functions, refer to the <code class="docutils literal notranslate"><span class="pre">optims</span></code> module.
+Vectorized backprop with batched data is also supported, however requires creating a subclass of <code class="docutils literal notranslate"><span class="pre">Module</span></code>.</p>
+</section>
+<section id="class-methods">
+<h3>Class methods<a class="headerlink" href="#class-methods" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.tensor.Tensor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.tensor.</span></span><span class="sig-name descname"><span class="pre">Tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value:</span> <span class="pre">list</span> <span class="pre">|</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_prev:</span> <span class="pre">tuple</span> <span class="pre">=</span> <span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.tensor.Tensor" title="Link to this definition">¶</a></dt>
+<dd><p>The main Tensor object.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.tensor.Tensor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value:</span> <span class="pre">list</span> <span class="pre">|</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_prev:</span> <span class="pre">tuple</span> <span class="pre">=</span> <span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#autograd.cpu.tensor.Tensor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes a Tensor.</p>
+<dl class="simple">
+<dt>A Tensor at all times holds:</dt><dd><ul class="simple">
+<li><p>A value assigned to it indicating its value.</p></li>
+<li><p>A gradient of the same shape as its value indicating its gradient.</p></li>
+<li><p>A function indicating how to pass a gradient to its children Tensors.</p></li>
+<li><p>A computational graph for all Tensors that eventually resulted in the Tensor.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Tensors store operations performed, allowing them to calculate the gradients of all Tensors in their 
+computational graph via .backward().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>Is either a numeric value</em><em> or </em><em>a list/np.ndarray. Complex</em><em> or </em><em>boolean values are not supported. Value is automatically recast to dtype.</em>) – The input Tensor value.</p></li>
+<li><p><strong>label</strong> – A string giving the Tensor an identifiable name. Defaults to “”.</p></li>
+<li><p><strong>dtype</strong> – The dtype to cast the input value. Must be one of np.bool, np.integer, np.floating.</p></li>
+<li><p><strong>learnable</strong> – Optional. A boolean indicating whether or not to compute gradients for _prev Tensors this Tensor has.
+Setting this to False means the computational graph will stop at this node.
+This node will still have gradients computed.</p></li>
+<li><p><strong>leaf</strong> – Optional. A boolean indicating if the Tensor is to be considered a leaf node in the computational graph.      
+Leaf nodes will have gradients tracked, but won’t appear as a weight in self.weights.</p></li>
+<li><p><strong>_prev</strong> – Optional. An empty tuple or a tuple of Tensor objects, referencing objects to pass gradients 
+too when doing a backwards pass. _prev is automatically filled when performing a 
+tensor method, manual specification is not necessary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A produced Tensor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.tensor.Tensor.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#autograd.cpu.tensor.Tensor.backward" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the gradients of all Tensors in self’s computation graph, storing results in self.topo and self.weights.</p>
+<p>self is initialized with gradient 1, incrementing all children gradients by this multiplier.</p>
+<dl class="simple">
+<dt>This method first creates two topological graphs of self.</dt><dd><ol class="arabic simple">
+<li><p>A backwards-pass graph including all Tensors contributing to self.</p></li>
+<li><dl class="simple">
+<dt>The backwards-pass graph, now omitting all Tensors with leaf=True.</dt><dd><p>This is useful for seeing the exact parameters contributing to the 
+current Tensor, ignoring any Tensors that were produced as intermediary
+values for producing the current Tensor.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reset_grad</strong> – Whether or not to reset the current backwards pass gradients.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.tensor.Tensor.create_graph">
+<span class="sig-name descname"><span class="pre">create_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#autograd.cpu.tensor.Tensor.create_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Creates two reverse-ordered topological graphs: topo and weights.</p>
+<p>_topo_ is the full backwards pass computational graph, which includes all 
+intermediary Tensors. _weights_ is a subgraph, containing only the Tensors
+containing learnable weights.</p>
+<p>For example, performing y = x**2 + 1 will create the following graphs:</p>
+<ul class="simple">
+<li><p>topo, containing: x**2 + 1, x**2, 1, and x.</p></li>
+<li><p>weights, containing: x</p></li>
+</ul>
+<p>although all nodes in topo were responsible for producing a gradient for x, 
+only the x node contains weights which would need to be updated by this gradient.</p>
+<p>Both graphs are lists that perform a pre-order traversal starting at self as the root node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>topo[list], weights[list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="basics-activations-and-losses">
+<h2>basics, activations, and losses<a class="headerlink" href="#basics-activations-and-losses" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">basics,</span> <span class="pre">activations,</span> <span class="pre">and</span> <span class="pre">losses</span></code> modules extend the functionality of the <code class="docutils literal notranslate"><span class="pre">Tensor</span></code>, by providing Pytorch-like classes
+that create a variety of higher-order Tensors commonly used in deep-learning.</p>
+<p>These include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Dropout, AddNorm, Linear, Softmax, Flatten, Conv2D layers,</p></li>
+<li><p>ReLU activation,</p></li>
+<li><p>BCELoss, CCELoss losses.</p></li>
+</ul>
+</div></blockquote>
+<p>The above classes contain no dependencies other than the <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> object and <code class="docutils literal notranslate"><span class="pre">NumPy</span></code>.
+Since <code class="docutils literal notranslate"><span class="pre">Tensors``s</span> <span class="pre">use</span> <span class="pre">``NumPy</span></code> arrays under the hood, creating custom classes is thus very simple.
+For example, defining Dropout is done as follows:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autograd.cpu.tensor</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">class</span> <span class="nc">Dropout</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="n">rate</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">training</span><span class="p">:</span>
+            <span class="n">n_points</span>        <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">)</span>
+            <span class="n">arr_indices</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)),</span>
+                                                <span class="n">size</span><span class="o">=</span><span class="n">n_points</span><span class="p">,</span>
+                                                <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">dropouted_pts</span>   <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mask_idcs</span><span class="p">(</span><span class="n">arr_indices</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dropouted_pts</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>Backpropagation can now be done using this Class, no different than with any other Tensor:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">otp</span> <span class="o">=</span> <span class="n">d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">otp</span><span class="o">.</span><span class="n">value</span>
+<span class="c1"># -&gt; array([1., 0., 0., 1.])</span>
+<span class="n">otp</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="n">x</span><span class="o">.</span><span class="n">grad</span>
+<span class="c1"># -&gt; array([1., 0., 0., 1.])</span>
+</pre></div>
+</div>
+<section id="id1">
+<h3>Class methods<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<dl class="py class" id="module-autograd.cpu.basics">
+<dt class="sig sig-object py" id="autograd.cpu.basics.AddNorm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.basics.</span></span><span class="sig-name descname"><span class="pre">AddNorm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.basics.AddNorm" title="Link to this definition">¶</a></dt>
+<dd><p>Performs AddNorm on an input x and skip connection value skip.
+The forward pass performs the following, outputting a Tensor:</p>
+<p>y = x + skip
+mu= mean of y
+sd= sd of y
+output = gain * (y-mu)/sd + bias</p>
+<p>gain defaults to 1.0.
+bias defaults to 0.0.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.basics.Conv2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.basics.</span></span><span class="sig-name descname"><span class="pre">Conv2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kH:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kW:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Conv2D'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.basics.Conv2D" title="Link to this definition">¶</a></dt>
+<dd><p>Performs Conv2D from an input dimension i_dim to an output dimension o_dim using a kernel (kH, kW).
+Kernels are initialized using Kaiming Uniform initialization.
+Only single strides are performed. No output padding is performed.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.basics.Dropout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.basics.</span></span><span class="sig-name descname"><span class="pre">Dropout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.basics.Dropout" title="Link to this definition">¶</a></dt>
+<dd><p>Dropout Class with specified rate parameter.
+Randomly masks input values with a probability of rate.</p>
+<p>Rate defaults to 0.1.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.basics.Flatten">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.basics.</span></span><span class="sig-name descname"><span class="pre">Flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Flatten'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.basics.Flatten" title="Link to this definition">¶</a></dt>
+<dd><p>Flattens an input by reshaping it into a 1D Tensor.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.basics.Linear">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.basics.</span></span><span class="sig-name descname"><span class="pre">Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.basics.Linear" title="Link to this definition">¶</a></dt>
+<dd><p>Linear 2D layer. Performs Wx + B on an input x.</p>
+<p>Inputs and outputs are in 3D: (bs, h, w)
+Weights are initialized using Kaiming Uniform initialization.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.basics.Softmax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.basics.</span></span><span class="sig-name descname"><span class="pre">Softmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Softmax'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.basics.Softmax" title="Link to this definition">¶</a></dt>
+<dd><p>Performs Softmax on an input.</p>
+</dd></dl>
+
+<dl class="py class" id="module-autograd.cpu.activations">
+<dt class="sig sig-object py" id="autograd.cpu.activations.ReLU">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.activations.</span></span><span class="sig-name descname"><span class="pre">ReLU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ReLU'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.activations.ReLU" title="Link to this definition">¶</a></dt>
+<dd><p>Performs ReLU activation, defined as a Class.</p>
+</dd></dl>
+
+<dl class="py class" id="module-autograd.cpu.losses">
+<dt class="sig sig-object py" id="autograd.cpu.losses.BCELoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.losses.</span></span><span class="sig-name descname"><span class="pre">BCELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BCELoss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.losses.BCELoss" title="Link to this definition">¶</a></dt>
+<dd><p>Binary Cross Entropy Loss.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.losses.CCELoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.losses.</span></span><span class="sig-name descname"><span class="pre">CCELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CCELoss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.losses.CCELoss" title="Link to this definition">¶</a></dt>
+<dd><p>Categorical Cross Entropy Loss.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="optims">
+<h2>optims<a class="headerlink" href="#optims" title="Link to this heading">¶</a></h2>
+<p>Classes for gradient descent such as SGD, SGD with Momentum, RMSProp, and Adam have been defined in the <code class="docutils literal notranslate"><span class="pre">optims</span></code> module.
+Optimizers are designed to work with the <code class="docutils literal notranslate"><span class="pre">weights</span></code> of a Tensor (called a <code class="docutils literal notranslate"><span class="pre">model</span></code>), each having a <code class="docutils literal notranslate"><span class="pre">.zero_grad</span></code> method
+for resetting Tensor gradients, a <code class="docutils literal notranslate"><span class="pre">.step</span></code> method for updating model weights given a loss function, and a <code class="docutils literal notranslate"><span class="pre">.step_single</span></code> method
+for updating model weights progressively in a memory-sensitive manner when model weights are large. This method is further explained under <code class="docutils literal notranslate"><span class="pre">Module</span></code>.</p>
+<p>Basic usage is the same across all optimizers;
+initialize the optimizer with the model weights along with optimizer-specific parameters;
+reset the model gradient;
+do a forward pass and a backwards pass with a specified loss function;
+and step with the optimizer, feeding in the loss function.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autograd.cpu.tensor</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">autograd.cpu.optims</span> <span class="kn">import</span> <span class="n">SGD</span>
+
+<span class="n">x</span>     <span class="o">=</span> <span class="n">Tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">y</span>     <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">create_graph</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>                <span class="c1"># fetching .weights from Tensor y</span>
+<span class="n">optim</span> <span class="o">=</span> <span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">optim</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">y</span>    <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mf">1.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="c1"># -&gt; 0.7100436 1.50433688 1.88085134e-05</span>
+</pre></div>
+</div>
+<dl class="py class" id="module-autograd.cpu.optims">
+<dt class="sig sig-object py" id="autograd.cpu.optims.Adam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.optims.</span></span><span class="sig-name descname"><span class="pre">Adam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.Adam" title="Link to this definition">¶</a></dt>
+<dd><p>Adam Optimizer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.Adam.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.Adam.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of Adam on model_parameters according to the loss function’s gradients.
+Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.Adam.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.Adam.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes
+by allowing for any number of gradient updates before values are updated.</p>
+<p>The single step of gradient descent is split into two components.
+1. Model parameter gradients are adjusted according to the average of the loss gradients.</p>
+<blockquote>
+<div><p>This is set when modify=False.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Model parameter values are updated.
+This is set when modify=True</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.Adam.zero_adam">
+<span class="sig-name descname"><span class="pre">zero_adam</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.Adam.zero_adam" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the momentums and variances stored by Adam for each model parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.Adam.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.Adam.zero_grad" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the model parameter gradients.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.optims.RMSProp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.optims.</span></span><span class="sig-name descname"><span class="pre">RMSProp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.RMSProp" title="Link to this definition">¶</a></dt>
+<dd><p>RMS Prop.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.RMSProp.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.RMSProp.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of RMSProp on model_parameters according to the loss function’s gradients.
+Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.RMSProp.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.RMSProp.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes
+by allowing for any number of gradient updates before values are updated.</p>
+<p>The single step of gradient descent is split into two components.
+1. Model parameter gradients are adjusted according to the average of the loss gradients.</p>
+<blockquote>
+<div><p>This is set when modify=False.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Model parameter values are updated.
+This is set when modify=True</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.optims.</span></span><span class="sig-name descname"><span class="pre">SGD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.SGD" title="Link to this definition">¶</a></dt>
+<dd><p>Vanilla Gradient Descent.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#autograd.cpu.optims.SGD.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of gradient descent on model_parameters according to the loss function’s gradients.
+Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#autograd.cpu.optims.SGD.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes
+by allowing for any number of gradient updates before values are updated.</p>
+<p>The single step of gradient descent is split into two components.
+1. Model parameter gradients are adjusted according to the average of the loss gradients.</p>
+<blockquote>
+<div><p>This is set when modify=False.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Model parameter values are updated.
+This is set when modify=True</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.SGD.zero_grad" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the gradient of each Tensor in model_parameters to 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD_Momentum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.optims.</span></span><span class="sig-name descname"><span class="pre">SGD_Momentum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.SGD_Momentum" title="Link to this definition">¶</a></dt>
+<dd><p>Gradient Descent with Momentum.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD_Momentum.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.SGD_Momentum.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of gradient descent with momentum on model_parameters according to the loss function’s gradients.
+Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.optims.SGD_Momentum.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.optims.SGD_Momentum.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes
+by allowing for any number of gradient updates before values are updated.</p>
+<p>The single step of gradient descent is split into two components.
+1. Model parameter gradients are adjusted according to the average of the loss gradients.</p>
+<blockquote>
+<div><p>This is set when modify=False.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Model parameter values are updated.
+This is set when modify=True</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#autograd.cpu.tensor.Tensor" title="autograd.cpu.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function.
+This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module">
+<h2>module<a class="headerlink" href="#module" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Module</span></code> class gives the ability to perform batched forward and backward passes on the model without mutating the model.
+Functions defined as classes representing models can also easily use optimizers as defined in <code class="docutils literal notranslate"><span class="pre">optims</span></code>.</p>
+<p>Below shows how to convert a class-defined function into one subclassing <code class="docutils literal notranslate"><span class="pre">Module</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DNN</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dense Neural Network, (28,28) -&gt; (10) &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>          <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span>        <span class="o">=</span> <span class="n">Flatten</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dense1</span>         <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">i_dim</span><span class="o">=</span><span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">,</span> <span class="n">o_dim</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span>          <span class="o">=</span> <span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dense2</span>         <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">i_dim</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">o_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The following have to now take place:</dt><dd><ol class="arabic simple">
+<li><p>Subclassing (<code class="docutils literal notranslate"><span class="pre">autograd.cpu.module.Module</span></code>)</p></li>
+<li><dl class="simple">
+<dt>A line <code class="docutils literal notranslate"><span class="pre">super().__init__</span></code>, passing in the expected model forward-pass inputs, with:</dt><dd><ul class="simple">
+<li><p>each input that is of type <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> has to have set <code class="docutils literal notranslate"><span class="pre">leaf=True</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Any calling of the model that has <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> inputs has to have <code class="docutils literal notranslate"><span class="pre">leaf=True</span></code></p></li>
+</ol>
+</dd>
+</dl>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DNN2</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PRECISION</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>          <span class="o">=</span> <span class="n">dtype</span>
+        <span class="n">batch_size</span>          <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span>        <span class="o">=</span> <span class="n">Flatten</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dense1</span>         <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">i_dim</span><span class="o">=</span><span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">,</span> <span class="n">o_dim</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span>          <span class="o">=</span> <span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dense2</span>         <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">i_dim</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">o_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">leaf</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>By subclassing, model forward passes can be performed by calling the model on the needed inputs,
+ensuring that all input keyword arguments are specified:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">DNN2</span><span class="p">()</span>
+<span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The below now illustrates the difference:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dnn1</span>    <span class="o">=</span> <span class="n">DNN</span><span class="p">()</span>
+<span class="n">dnn2</span>    <span class="o">=</span> <span class="n">DNN2</span><span class="p">()</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">x</span>          <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">leaf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">fwd1</span>    <span class="o">=</span> <span class="n">dnn1</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>   <span class="c1"># shape=(batch_size, 1, 10)</span>
+<span class="n">fwd2</span>    <span class="o">=</span> <span class="n">dnn2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>         <span class="c1"># shape=(batch_size, 1, 10)</span>
+
+<span class="n">fwd1</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="n">fwd2</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+<span class="n">dnn1</span><span class="o">.</span><span class="n">dense2</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dnn2</span><span class="o">.</span><span class="n">dense2</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+<span class="c1"># -&gt; ((batch_size, 100, 10), (1, 100, 10))</span>
+<span class="n">dnn1</span><span class="o">.</span><span class="n">dense2</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dnn2</span><span class="o">.</span><span class="n">dense2</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">shape</span>
+<span class="c1"># -&gt; ((batch_size, 100, 10), (1, 100, 10))</span>
+</pre></div>
+</div>
+<p>Both versions are able to apply batched forward passes on the input.
+However, due to Tensor automatically rescaling due to broadcasting, only the model subclassing <code class="docutils literal notranslate"><span class="pre">Module</span></code>
+is able to maintain the originally instantiated shape of values and gradients.</p>
+<p>Performing gradient descent on the original model would require resetting values and gradient shapes
+of each model weight, and updating gradients according to the batched versions, undoing any broadcasting.
+This process is done automatically when subclassing <code class="docutils literal notranslate"><span class="pre">Module</span></code>, with the batched copy of the <code class="docutils literal notranslate"><span class="pre">model</span></code>
+available under <code class="docutils literal notranslate"><span class="pre">model.copy</span></code>.</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">Module</span></code> makes it easy to perform gradient descent with <code class="docutils literal notranslate"><span class="pre">optim</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Model weights are found in <code class="docutils literal notranslate"><span class="pre">model.weights</span></code>. These weights are given to the optimizer for updating.</p></li>
+<li><p>Batched model data which is stored in the model after calling on batched data is reset with <code class="docutils literal notranslate"><span class="pre">model.model_reset()</span></code>. If this is not reset, the previous model gradients will accumulate. This will also stop the model from training if different batch sizes are given from one training epoch from the next.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autograd.cpu.tensor</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">autograd.cpu.optims</span> <span class="kn">import</span> <span class="n">SGD</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">model</span>       <span class="o">=</span> <span class="n">DNN2</span><span class="p">()</span>                        <span class="c1"># defined previously, subclassing Module</span>
+<span class="n">optim</span>       <span class="o">=</span> <span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>    <span class="c1"># model.weights property is available</span>
+
+<span class="n">n_epochs</span>    <span class="o">=</span> <span class="mi">25</span>
+<span class="n">batch_size</span>  <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+    <span class="n">x</span>           <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="n">batch_size</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">)),</span> <span class="n">leaf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">y_true</span>      <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">leaf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">model_reset</span><span class="p">()</span>
+    <span class="n">optim</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">loss</span>   <span class="o">=</span> <span class="p">((</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># averages over the batch</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The model’s weights will be updated here according to losses averaged over the batch, but without any change to their originally defined shape.
+For more training examples, see <code class="docutils literal notranslate"><span class="pre">`examples`</span></code> in the repo.</p>
+<dl class="py class" id="module-autograd.cpu.module">
+<dt class="sig sig-object py" id="autograd.cpu.module.Module">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">autograd.cpu.module.</span></span><span class="sig-name descname"><span class="pre">Module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.module.Module" title="Link to this definition">¶</a></dt>
+<dd><p>Module Class. Allows for performing batched forward and backwards 
+passes on a model without modifying the model directly.
+The subclassed models must perform any required <a href="#id2"><span class="problematic" id="id3">**</span></a>kwargs type checking.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.module.Module.forward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.module.Module.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Ensure this method is defined in the subclass.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="autograd.cpu.module.Module.model_reset">
+<span class="sig-name descname"><span class="pre">model_reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autograd.cpu.module.Module.model_reset" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes the batched model.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">danila-grad</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tensor">tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basics-activations-and-losses">basics, activations, and losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optims">optims</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module">module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Usage</a></li>
+      <li>Next: <a href="examples.html" title="next chapter">Examples</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Danila Kurganov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

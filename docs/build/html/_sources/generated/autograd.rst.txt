@@ -1,0 +1,13 @@
+﻿autograd
+========
+
+.. automodule:: autograd
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   cpu
