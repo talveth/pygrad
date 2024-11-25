@@ -7,14 +7,15 @@ class BCELoss:
     """
     Binary Cross Entropy Loss.
     """
-    def __init__(self, label="BCELoss"):
+    def __init__(self, label:str="BCELoss"):
         # expects (B, 1, 1)
+        assert isinstance(label, str), "label must be a str"
         self.label  = label
 
     def __repr__(self) -> str:
         return f"BCELoss=(name={self.label})"
 
-    def __call__(self, pred, target):
+    def __call__(self, pred:Tensor, target:Tensor)->Tensor:
         """
         Computes the BCE on pred and target, summing over the batch dimension.
 
@@ -42,12 +43,13 @@ class CCELoss:
     Categorical Cross Entropy Loss.
     """
     def __init__(self, label="CCELoss"):
+        assert isinstance(label, str), "label must be a str."
         self.label = label
     
     def __repr__(self):
         return f"CCELoss=(name={self.label})"
     
-    def __call__(self, pred, target, mask:bool=False)->Tensor:
+    def __call__(self, pred:Tensor, target:Tensor, mask:bool=False)->Tensor:
         """
         Performs CCE on pred and target, with an optional mask.
 

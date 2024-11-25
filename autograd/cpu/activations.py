@@ -1,21 +1,22 @@
 
+from __future__ import annotations
 from typing import Union
 
 class ReLU:
     """
-    Performs ReLU.
+    Performs ReLU activation, defined as a Class.
     """
     def __init__(self, label:Union[None,int,str]="ReLU"):
+        assert isinstance(label, (int, str)) or label is None, "Ensure label is None, an int, or a str."
         self.label  = label
         self.value  = None
         self.tensor = None
 
     def __repr__(self) -> str:
-        if self.tensor is None:
-            raise "Unable to __repr__, do a forward pass first."
-        return f"ReLU=(name={self.label})"
+        return f"ReLU Layer=(name={self.label})"
 
-    def __call__(self, x):
+    def __call__(self, x:Tensor)->Tensor:
+        assert isinstance(x, Tensor), "x must be of type Tensor."
         out = x.relu()
         out.label = self.label
         self.tensor = out

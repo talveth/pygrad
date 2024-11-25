@@ -7,7 +7,9 @@ from abc import ABC, abstractmethod
 
 class Module(ABC):
     """
-    Module Class.
+    Module Class. Allows for performing batched forward and backwards 
+    passes on a model without modifying the model directly.
+    The subclassed models must perform any required **kwargs type checking.
     """
     @abstractmethod
     def __init__(self, **kwargs):
@@ -20,7 +22,7 @@ class Module(ABC):
         """Ensure this method is defined in the subclass."""
         pass
 
-    def __call__(self, **kwargs: Tensor):
+    def __call__(self, **kwargs: Tensor)->Tensor:
         """
         Returns the forward pass output of the model on a batched input.
 
@@ -41,7 +43,7 @@ class Module(ABC):
         self.model_copy     = None
         self.model_copy     = copy.deepcopy(self)
 
-    def call_slow(self, **kwargs:Tensor):
+    def call_slow(self, **kwargs:Tensor)->Tensor:
         ## creates a batch-friendly version of the original model to do backprop with
         self.model_copy         = None
         self.model_copy         = copy.deepcopy(self)
