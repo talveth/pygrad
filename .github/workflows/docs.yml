@@ -30,9 +30,10 @@ jobs:
 
       - name: make the sphinx docs
         run: |
+          echo "$PWD"
           cd docs
-          make clean
-          make html
+          make -f Makefile clean
+          make -f Makefile html
 
       - name: Init new repo in dist folder and commit generated files
         run: |
