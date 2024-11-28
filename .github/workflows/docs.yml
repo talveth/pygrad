@@ -32,6 +32,7 @@ jobs:
         run: |
           make -C docs clean
           make -C docs html
+          git config --global --add safe.directory /github/workspace/docs/build/html
 
       - name: Init new repo in dist folder and commit generated files
         run: |
