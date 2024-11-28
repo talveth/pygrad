@@ -54,7 +54,7 @@ def softmax_matmul_3D(A,B):
 def softmax_grad(new_val,grad):
     s1,s2,s3 = new_val.shape
     _,b3,_ = grad.shape
-    res2     = np.empty((s1,b3,s3))
+    res2     = np.empty((s1,b3,s3), dtype=new_val.dtype)
     for b in prange(s1):
         for c in prange(s2):
             for w in prange(s3):
@@ -63,4 +63,3 @@ def softmax_grad(new_val,grad):
                     acc+=new_val[b,c,w]*((i==w)-new_val[b,c,i])*grad[b,c,i]
                 res2[b,c,w]=acc
     return res2
-

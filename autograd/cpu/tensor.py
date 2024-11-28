@@ -379,7 +379,7 @@ class Tensor:
         """
         if len(self.shape) <= 1:
             return self
-        new                          = Tensor(value=np.einsum('...ij->...ji', self.value), _prev=(self,), 
+        new                          = Tensor(value=np.einsum('...ij->...ji', self.value, dtype=self.dtype), _prev=(self,), 
                                               label=f"{self.label}.T", leaf=True, dtype=self.dtype)
         def bpass():
             self.grad               += np.einsum('...ij->...ji', new.grad, optimize='optimal', dtype=self.dtype)
@@ -481,6 +481,7 @@ class Tensor:
                 self.grad           += result
 
             elif len(self.shape) == 3:
+                assert self.dtype is not np.float16, "Softmax .grad is not supported for np.float16."
                 self.grad        += softmax_grad(new_val, new.grad)
             else:
                 raise "ERROR, self.shape should be 3D or 4D"
@@ -519,6 +520,7 @@ class Tensor:
                 self.grad           += result
 
             elif len(self.shape) == 3:
+                assert self.dtype is not np.float16, "Softmax .grad is not supported for np.float16."
                 new_val              = new_val_exp
                 self.grad           += softmax_grad(new_val, new.grad/new_val)
             else:
@@ -573,7 +575,7 @@ class Tensor:
         for i in range(H-kH+1):
             for j in range(W-kW+1):
                 for c in range(outC):
-                    output_np[:,c,i,j]  = np.einsum('i...->i', self.value[:,c,:,:,:] * other.value[:,:,i:i+kH,j:j+kW], optimize='optimal')
+                    output_np[:,c,i,j]  = np.einsum('i...->i', self.value[:,c,:,:,:] * other.value[:,:,i:i+kH,j:j+kW], optimize='optimal', dtype=self.dtype)
         new                             = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True, dtype=self.dtype)
 
         def bpass():

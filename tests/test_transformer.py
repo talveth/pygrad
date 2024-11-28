@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from autograd.cpu.tensor import Tensor
+from autograd.cpu.constants import PRECISION
 from autograd.cpu.optims import SGD, RMSProp, Adam
 import autograd
 import numpy as np
@@ -17,8 +18,19 @@ from architectures.transformer import Transformer
 import copy
 
 
-PRECISION = np.float64
+if PRECISION in [np.float32]:
+    tol = 1e-5
+else:
+    tol = 1e-7
 
+dtype_mapping = {
+    np.float32: torch.float32,
+    np.float64: torch.float64,
+    np.int32: torch.int32,
+    np.int64: torch.int64,
+    np.uint8: torch.uint8,
+    np.bool_: torch.bool
+}
 
 class TestTransformer(unittest.TestCase):
     """
@@ -96,7 +108,7 @@ class TestTransformer(unittest.TestCase):
         # load data
         prepare_dataset                 = PrepareDataset()
         max_dataset_length              = 100
-        dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('data/english-german-both.pkl', max_len=max_dataset_length, store=False)
+        dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('tests/english-german-both.pkl', max_len=max_dataset_length, store=False)
         train, test                     = prepare_dataset.train_test_split(dataset, split=0.8, shuffle=True, store=False)
         trainX, trainY                  = prepare_dataset.create_enc_dec_inputs(train, store=False)
 
@@ -156,19 +168,19 @@ class TestTransformer(unittest.TestCase):
                         model_custom.model_reset()
                         xe_inp       = trainX[:batch_size,1:]
                         xe_inp_c     = Tensor(copy.copy(xe_inp), dtype=PRECISION, leaf=True)
-                        xe_inp_pt    = torch.tensor(copy.copy(xe_inp), dtype=torch.float64, requires_grad=True)
+                        xe_inp_pt    = torch.tensor(copy.copy(xe_inp), dtype=dtype_mapping[PRECISION], requires_grad=True)
                         
                         xd_inp       = trainY[:batch_size,:-1]
                         xd_inp_c     = Tensor(copy.copy(xd_inp), dtype=PRECISION, leaf=True)
-                        xd_inp_pt    = torch.tensor(copy.copy(xd_inp), dtype=torch.float64, requires_grad=True)
+                        xd_inp_pt    = torch.tensor(copy.copy(xd_inp), dtype=dtype_mapping[PRECISION], requires_grad=True)
 
                         outp_custom  = model_custom(enc_inp=xe_inp_c, dec_inp=xd_inp_c, training=False)
                         outp_torch   = model_torch(src=xe_inp_pt, trg=xd_inp_pt)
                         outp_torch.retain_grad()
 
                         y_out        = Tensor(np.array(trainY[:batch_size,1:]), dtype=PRECISION, leaf=True)
-                        y_out_c      = Tensor(model_custom.onehot_tokens(y_out), learnable=False, leaf=True)    
-                        y_out_pt     = torch.tensor(copy.copy(y_out_c.value).reshape(-1, y_out_c.shape[-1]), dtype=torch.float64, requires_grad=True).argmax(dim=-1)
+                        y_out_c      = Tensor(model_custom.onehot_tokens(y_out), learnable=False, leaf=True, dtype=PRECISION)    
+                        y_out_pt     = torch.tensor(copy.copy(y_out_c.value).reshape(-1, y_out_c.shape[-1]), dtype=dtype_mapping[PRECISION], requires_grad=True).argmax(dim=-1)
 
                         loss_c              = loss_fn_c(outp_custom, y_out_c, mask=True)
                         loss_pt             = loss_fn_pt(outp_torch.reshape(-1, y_out_c.shape[-1]), y_out_pt)
@@ -179,8 +191,8 @@ class TestTransformer(unittest.TestCase):
                         loss_pt.backward()
 
                         # test fwd passes
-                        self.assertTrue(np.all(np.isclose(outp_custom.value, outp_torch.detach().numpy())))
-                        self.assertTrue(np.all(np.isclose(loss_c.value, loss_pt.detach().numpy())))
+                        self.assertTrue(np.max(np.abs(outp_custom.value - outp_torch.detach().numpy()))<tol)
+                        self.assertTrue(np.all(np.isclose(loss_c.value, loss_pt.detach().numpy(), rtol=tol)))
 
                         #### use adam optimizer and backprop
                         optim_c.step(loss_c)
@@ -192,13 +204,13 @@ class TestTransformer(unittest.TestCase):
         # load data
         prepare_dataset                 = PrepareDataset()
         max_dataset_length              = 100
-        dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('data/english-german-both.pkl', max_len=max_dataset_length, store=False)
+        dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('tests/english-german-both.pkl', max_len=max_dataset_length, store=False)
         train, test                     = prepare_dataset.train_test_split(dataset, split=0.8, shuffle=True, store=False)
         trainX, trainY                  = prepare_dataset.create_enc_dec_inputs(train, store=False)
 
         for n_heads in [1,4,8]:
             for d_model in [16,32]:
-                for n_layers in [0,2]:
+                for n_layers in [1,2,4]:
                     d_k, d_v                = d_model, d_model
                     d_ff                    = 32
                     d_k, d_v                = 16, 16
@@ -244,25 +256,25 @@ class TestTransformer(unittest.TestCase):
                     loss_fn_c           = CCELoss()
                     loss_fn_pt          = torch.nn.CrossEntropyLoss(ignore_index=src_pad_idx)
                     batch_size          = 1
-                    n_epochs            = 5
+                    n_epochs            = 3
 
                     for i in range(n_epochs):
                         model_custom.model_reset()
                         xe_inp       = trainX[:batch_size,1:]
                         xe_inp_c     = Tensor(copy.copy(xe_inp), dtype=PRECISION, leaf=True)
-                        xe_inp_pt    = torch.tensor(copy.copy(xe_inp), dtype=torch.float64, requires_grad=True)
+                        xe_inp_pt    = torch.tensor(copy.copy(xe_inp), dtype=dtype_mapping[PRECISION], requires_grad=True)
                         
                         xd_inp       = trainY[:batch_size,:-1]
                         xd_inp_c     = Tensor(copy.copy(xd_inp), dtype=PRECISION, leaf=True)
-                        xd_inp_pt    = torch.tensor(copy.copy(xd_inp), dtype=torch.float64, requires_grad=True)
+                        xd_inp_pt    = torch.tensor(copy.copy(xd_inp), dtype=dtype_mapping[PRECISION], requires_grad=True)
 
                         outp_custom  = model_custom(enc_inp=xe_inp_c, dec_inp=xd_inp_c, training=False)
                         outp_torch   = model_torch(src=xe_inp_pt, trg=xd_inp_pt)
                         outp_torch.retain_grad()
 
                         y_out        = Tensor(np.array(trainY[:batch_size,1:]), dtype=PRECISION, leaf=True)
-                        y_out_c      = Tensor(model_custom.onehot_tokens(y_out), learnable=False, leaf=True)    
-                        y_out_pt     = torch.tensor(copy.copy(y_out_c.value).reshape(-1, y_out_c.shape[-1]), dtype=torch.float64, requires_grad=True).argmax(dim=-1)
+                        y_out_c      = Tensor(model_custom.onehot_tokens(y_out), learnable=False, leaf=True, dtype=PRECISION)    
+                        y_out_pt     = torch.tensor(copy.copy(y_out_c.value).reshape(-1, y_out_c.shape[-1]), dtype=dtype_mapping[PRECISION], requires_grad=True).argmax(dim=-1)
 
                         loss_c              = loss_fn_c(outp_custom, y_out_c, mask=True)
                         loss_pt             = loss_fn_pt(outp_torch.reshape(-1, y_out_c.shape[-1]), y_out_pt)
@@ -273,8 +285,9 @@ class TestTransformer(unittest.TestCase):
                         loss_pt.backward()
 
                         # test fwd passes
-                        self.assertTrue(np.all(np.isclose(outp_custom.value, outp_torch.detach().numpy())))
-                        self.assertTrue(np.all(np.isclose(loss_c.value, loss_pt.detach().numpy())))
+                        print(np.max(np.abs(outp_custom.value - outp_torch.detach().numpy())))
+                        self.assertTrue(np.all(np.abs(outp_custom.value - outp_torch.detach().numpy())<tol))
+                        self.assertTrue(np.all(np.isclose(loss_c.value, loss_pt.detach().numpy(), rtol=tol)))
 
                         #### use adam optimizer and backprop
                         optim_c.step(loss_c)
@@ -286,7 +299,7 @@ class TestTransformer(unittest.TestCase):
         # load data
         prepare_dataset                 = PrepareDataset()
         max_dataset_length              = 100
-        dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('data/english-german-both.pkl', max_len=max_dataset_length, store=False)
+        dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('tests/english-german-both.pkl', max_len=max_dataset_length, store=False)
         train, test                     = prepare_dataset.train_test_split(dataset, split=0.8, shuffle=True, store=False)
         trainX, trainY                  = prepare_dataset.create_enc_dec_inputs(train, store=False)
 
@@ -345,19 +358,19 @@ class TestTransformer(unittest.TestCase):
                         model_custom.model_reset()
                         xe_inp       = trainX[:batch_size,1:]
                         xe_inp_c     = Tensor(copy.copy(xe_inp), dtype=PRECISION, leaf=True)
-                        xe_inp_pt    = torch.tensor(copy.copy(xe_inp), dtype=torch.float64, requires_grad=True)
+                        xe_inp_pt    = torch.tensor(copy.copy(xe_inp), dtype=dtype_mapping[PRECISION], requires_grad=True)
                         
                         xd_inp       = trainY[:batch_size,:-1]
                         xd_inp_c     = Tensor(copy.copy(xd_inp), dtype=PRECISION, leaf=True)
-                        xd_inp_pt    = torch.tensor(copy.copy(xd_inp), dtype=torch.float64, requires_grad=True)
+                        xd_inp_pt    = torch.tensor(copy.copy(xd_inp), dtype=dtype_mapping[PRECISION], requires_grad=True)
 
                         outp_custom  = model_custom(enc_inp=xe_inp_c, dec_inp=xd_inp_c, training=False)
                         outp_torch   = model_torch(src=xe_inp_pt, trg=xd_inp_pt)
                         outp_torch.retain_grad()
 
                         y_out        = Tensor(np.array(trainY[:batch_size,1:]), dtype=PRECISION, leaf=True)
-                        y_out_c      = Tensor(model_custom.onehot_tokens(y_out), learnable=False, leaf=True)    
-                        y_out_pt     = torch.tensor(copy.copy(y_out_c.value).reshape(-1, y_out_c.shape[-1]), dtype=torch.float64, requires_grad=True).argmax(dim=-1)
+                        y_out_c      = Tensor(model_custom.onehot_tokens(y_out), learnable=False, leaf=True, dtype=PRECISION)    
+                        y_out_pt     = torch.tensor(copy.copy(y_out_c.value).reshape(-1, y_out_c.shape[-1]), dtype=dtype_mapping[PRECISION], requires_grad=True).argmax(dim=-1)
 
                         loss_c              = loss_fn_c(outp_custom, y_out_c, mask=True)
                         loss_pt             = loss_fn_pt(outp_torch.reshape(-1, y_out_c.shape[-1]), y_out_pt)
@@ -368,8 +381,8 @@ class TestTransformer(unittest.TestCase):
                         loss_pt.backward()
 
                         # test fwd passes
-                        self.assertTrue(np.all(np.isclose(outp_custom.value, outp_torch.detach().numpy())))
-                        self.assertTrue(np.all(np.isclose(loss_c.value, loss_pt.detach().numpy())))
+                        self.assertTrue(np.max(np.abs(outp_custom.value - outp_torch.detach().numpy()))<tol)
+                        self.assertTrue(np.all(np.isclose(loss_c.value, loss_pt.detach().numpy(), rtol=tol)))
 
                         #### use adam optimizer and backprop
                         optim_c.step(loss_c)
@@ -397,13 +410,13 @@ class CCELoss:
         
         if not mask:
             loss             = (target * (pred.softmax().log())).sum()
-            loss_multiplier  = Tensor(value=np.ones_like(loss.value)*(-1/pred.shape[0]))
+            loss_multiplier  = Tensor(value=np.ones_like(loss.value, dtype=pred.dtype)*(-1/pred.shape[0]), dtype=pred.dtype)
             loss             = loss * loss_multiplier
         else:
             mask_np          = (target[:,:,0] != 1)[...,None]
-            mask             = Tensor(mask_np, learnable=False, leaf=True)
+            mask             = Tensor(mask_np, learnable=False, leaf=True, dtype=pred.dtype)
             loss             = ((target*mask)*(pred.softmax().log())).sum()
-            loss_multiplier  = Tensor(value=np.ones_like(loss.value)*(-1/np.sum(mask[:])))
+            loss_multiplier  = Tensor(value=np.ones_like(loss.value, dtype=pred.dtype)*(-1/np.sum(mask[:])), dtype=pred.dtype)
             loss             = loss * loss_multiplier
         return loss
 

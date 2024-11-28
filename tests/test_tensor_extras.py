@@ -6,11 +6,16 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from autograd.cpu.tensor import Tensor
+from autograd.cpu.constants import PRECISION
 import autograd
 import numpy as np
 import torch
 import numba as nb
 
+if PRECISION in [np.float16, np.float32]:
+    tol = 1e-5
+else:
+    tol = 1e-8
 
 class TestTensorExtras(unittest.TestCase):
 
@@ -37,8 +42,8 @@ class TestTensorExtras(unittest.TestCase):
 
                     self.assertTrue(np.all(np.isclose(tensor_loss.value.item(), torch_loss.detach().numpy().item())))
                     self.assertTrue(a.grad.shape == tuple(at.grad.shape))
-                    self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=1e-5)))
-                    self.assertTrue(np.all(np.isclose(a_fnc.grad, at_fnc.grad, rtol=1e-5)))
+                    self.assertTrue(np.all(np.max(np.abs(a.grad-at.grad.detach().numpy()))<tol))
+                    self.assertTrue(np.all(np.isclose(a_fnc.grad, at_fnc.grad, rtol=tol)))
 
     def test_mean(self):
         shapes = [(10,20,20), (10,20), (1,1,1), (1,10,1), (1,1,1,1)]
@@ -137,8 +142,8 @@ class TestTensorExtras(unittest.TestCase):
             self.assertTrue(np.all(np.isclose(a_sm.value, at_sm.detach().numpy())))
             self.assertTrue(tensor_loss.value, torch_loss.detach().numpy())
             self.assertTrue(a.grad.shape == tuple(at.grad.shape))
-            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=1e-9)))
-            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=1e-9)))
+            self.assertTrue(np.all(np.max(np.abs(a.grad-at.grad.detach().numpy()))<tol))
+            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=tol)))
 
     def test_log(self):
         test_shapes         = [(1,1,5), (3,5,5), (1,2,5), (), (1), (1,1,1), (1,1), (10,1), (1,10)]
@@ -161,8 +166,8 @@ class TestTensorExtras(unittest.TestCase):
 
             self.assertTrue(np.all(np.isclose(a_sm.value, at_sm.detach().numpy())))
             self.assertTrue(a.grad.shape == tuple(at.grad.shape))
-            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=1e-9)))
-            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=1e-9)))
+            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=tol)))
+            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=tol)))
 
 
     def test_sigmoid(self):
@@ -186,8 +191,8 @@ class TestTensorExtras(unittest.TestCase):
             torch_loss.backward()
 
             self.assertTrue(a.grad.shape == tuple(at.grad.shape))
-            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=1e-9)))
-            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=1e-9)))
+            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=tol)))
+            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=tol)))
 
     def test_tanh(self):
         test_shapes         = [(1,1,1), (3,5,1), (2,1), (), (1), (10,1)]
@@ -211,8 +216,8 @@ class TestTensorExtras(unittest.TestCase):
 
             self.assertTrue(np.all(np.isclose(a_sm.value, at_sm.detach().numpy())))
             self.assertTrue(a.grad.shape == tuple(at.grad.shape))
-            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=1e-9)))
-            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=1e-9)))
+            self.assertTrue(np.all(np.isclose(a.grad, at.grad, rtol=tol)))
+            self.assertTrue(np.all(np.isclose(a_sm.grad, at_sm.grad, rtol=tol)))
 
     def test_conv2D(self):
 

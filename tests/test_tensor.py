@@ -5,9 +5,16 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from autograd.cpu.tensor import Tensor
+from autograd.cpu.constants import PRECISION
 import numpy as np
 import torch
 import numba as nb
+
+if PRECISION in [np.float16, np.float32]:
+    tol = 1e-5
+else:
+    tol = 1e-8
+
 
 class TestTensor(unittest.TestCase):
     """

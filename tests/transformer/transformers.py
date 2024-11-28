@@ -9,12 +9,12 @@ from autograd.cpu.tensor import Tensor
 from autograd.cpu.basics import Linear, AddNorm, Dropout
 from autograd.cpu.activations import ReLU
 from autograd.cpu.module import Module
-
-PRECISION = np.float64
+from autograd.cpu.constants import PRECISION
 
 dtype_mapping = {
     np.float32: torch.float32,
     np.float64: torch.float64,
+    np.float128: torch.float64,
     np.int32: torch.int32,
     np.int64: torch.int64,
     np.uint8: torch.uint8,
@@ -367,7 +367,7 @@ class Attention:
     
     def __call__(self, Q:Tensor, K:Tensor, V:Tensor, mask=None):
         self.QKT            = Q @ K.T
-        multiplier          = Tensor(np.ones_like(self.QKT.value)*(1/np.sqrt(self.d_k/self.n_heads)))
+        multiplier          = Tensor(np.ones_like(self.QKT.value, dtype=self.dtype)*(1/np.sqrt(self.d_k/self.n_heads)), dtype=self.dtype)
         presoftmax          = self.QKT * multiplier
         presoftmax.label    = "attention presoftmax"
         #
@@ -551,8 +551,8 @@ class Transformer(Module):
         self.decoder                = Decoder(self.d_vocab_dec,
                                       n_heads, d_model, d_k, d_v, d_ff, 
                                       n_layers=n_layers, d_context=dec_seq_length, dropout=self.dropout_rate)
-        super().__init__(enc_inp=Tensor(np.ones((batch_size, enc_seq_length), dtype=self.dtype), leaf=True), 
-                         dec_inp=Tensor(np.ones((batch_size, dec_seq_length), dtype=self.dtype), leaf=True),
+        super().__init__(enc_inp=Tensor(np.ones((batch_size, enc_seq_length), dtype=self.dtype), leaf=True, dtype=self.dtype), 
+                         dec_inp=Tensor(np.ones((batch_size, dec_seq_length), dtype=self.dtype), leaf=True, dtype=self.dtype),
                          training=True)
 
     def forward(self, enc_inp:Tensor, dec_inp:Tensor, training:bool):
@@ -579,18 +579,18 @@ class Transformer(Module):
     def make_enc_mask(self, enc_inp):
         enc_padding_mask:np.ndarray    = self.padding_mask(enc_inp.value)[:,np.newaxis,:,np.newaxis]      # (bs,1,d_context_enc,1);
         enc_padding_mask               = np.tile(enc_padding_mask, (1,self.n_heads,1,enc_padding_mask.shape[-2]))       # (bs, n_heads, d_context_enc, d_context_enc)
-        enc_padding_mask               = Tensor(enc_padding_mask, label="enc_padding_mask", learnable=False, leaf=True).T
+        enc_padding_mask               = Tensor(enc_padding_mask, label="enc_padding_mask", learnable=False, leaf=True, dtype=self.dtype).T
         self.enc_padding_mask          = enc_padding_mask
         return enc_padding_mask
 
     def make_dec_lookahead_mask(self, dec_inp):
         dec_padding_mask:np.ndarray    = self.padding_mask(dec_inp.value)[:,np.newaxis,:,np.newaxis]# (bs,1,d_context,1);
         dec_padding_mask               = np.tile(dec_padding_mask, (1,self.n_heads,1,dec_padding_mask.shape[-2])) # (bs,n_heads,d_context_dec,d_context_dec);
-        dec_padding_mask               = Tensor(dec_padding_mask, label="dec_padding_mask", learnable=False, leaf=True).T
+        dec_padding_mask               = Tensor(dec_padding_mask, label="dec_padding_mask", learnable=False, leaf=True, dtype=self.dtype).T
         dec_lookahead_mask:np.ndarray  = self.lookahead_mask(dec_inp.shape[1])[np.newaxis,:,:,:]    # (1,1,d_context_dec,d_context_dec)
         dec_lookahead_mask             = np.tile(dec_lookahead_mask, (dec_inp.shape[0], self.n_heads, 1, 1))      # (bs,n_heads,d_context_dec,d_context_dec)
         dec_lookahead_mask             = np.maximum(np.maximum(dec_padding_mask.value, dec_padding_mask.T.value), dec_lookahead_mask)
-        dec_lookahead_mask             = Tensor(dec_lookahead_mask, label="dec_lookahead_mask", learnable=False, leaf=True)        
+        dec_lookahead_mask             = Tensor(dec_lookahead_mask, label="dec_lookahead_mask", learnable=False, leaf=True, dtype=self.dtype)
         self.dec_lookahead_mask        = dec_lookahead_mask
         return dec_lookahead_mask
 
@@ -602,7 +602,7 @@ class Transformer(Module):
         cross21     = self.padding_mask(enc_inp.value)[:,None,:,None]
         cross22     = np.transpose(np.tile(cross21, (1,self.n_heads,1,dec_inp.shape[-1])), (0,1,3,2))
         # cross_mask  = Tensor(np.maximum(cross12, cross22))
-        cross_mask  = Tensor(cross22)
+        cross_mask  = Tensor(cross22, dtype=self.dtype)
         self.cross12    = cross12
         self.cross_mask = cross22
         return cross_mask
