@@ -215,7 +215,7 @@ def onehot_tokens(inp:Tensor, d_vocab:int) -> Tensor:
     return one_hot
 
 class Transformer(Module):
-    print(f"Make sure PRECISION is np.float64 or higher, have {PRECISION}")
+    print(f"Make sure PRECISION is np.float32 or higher, currently: {PRECISION}")
     def __init__(self,
                  enc_tokenizer, dec_tokenizer,
                  n_heads=8, d_model=512, d_k=512, d_v=512, d_ff=2048, 
