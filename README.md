@@ -44,4 +44,4 @@ Additional examples can be found under `examples/`.
 
 #### Citation
 
-If you find this project helpful in your research or work, I kindly ask that you cite it. Thank you!
+If you find this project helpful in your research or work, I kindly ask that you cite it: [View Citation](./CITATION.cff). Thank you! 
