@@ -32,11 +32,10 @@ jobs:
         run: |
           make -C docs clean
           make -C docs html
-          git config --global --add safe.directory /github/workspace/docs/build/html
+          git config --global --add safe.directory /docs/build/html
 
       - name: Init new repo in dist folder and commit generated files
         run: |
-          git config --global --add safe.directory /github/workspace/docs/build/html
           cd docs/build/html/
           git init
           touch .nojekyll
