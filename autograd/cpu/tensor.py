@@ -527,7 +527,6 @@ class Tensor:
         return new
 
 
-
     def sigmoid(self)->Tensor:
         """
         Applies sigmoid activation to self, returning a new Tensor.
