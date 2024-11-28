@@ -30,16 +30,12 @@ jobs:
 
       - name: make the sphinx docs
         run: |
-          echo "$PWD"
-          echo $(ls)
-          cd docs
-          echo $(ls)
-          make -f Makefile clean
-          make -f Makefile html
+          make -C docs clean
+          make -C docs html
 
       - name: Init new repo in dist folder and commit generated files
         run: |
-          cd build/html/
+          cd docs/build/html/
           git init
           touch .nojekyll
           git add -A
