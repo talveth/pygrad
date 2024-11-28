@@ -77,9 +77,9 @@ class Tensor:
 
     def _valid_values(self, with_tensor:bool=False):
         if not with_tensor:
-            return (int, float, np.integer, np.floating, np.ndarray, np.bool, list)
+            return (int, float, np.integer, np.floating, np.ndarray, np.bool_, list)
         else:
-            return (int, float, np.integer, np.floating, np.ndarray, np.bool, list, Tensor)
+            return (int, float, np.integer, np.floating, np.ndarray, np.bool_, list, Tensor)
 
     def __repr__(self) -> str:
         if self.shape == ():
