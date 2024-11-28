@@ -284,17 +284,17 @@ class Tensor:
 
         def bpass():
             if axis is None:
-                c = np.prod(self.shape)
+                c = 1/np.prod(self.shape)
             elif isinstance(axis, int):
                 c = 1/self.shape[axis]
             else:
-                c = np.prod([self.shape[ax] for ax in axis])
+                c = 1/np.prod([self.shape[ax] for ax in axis])
 
             if keepdims:
-                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new.grad, optimize='optimal', dtype=self.dtype)
+                self.grad += c * np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new.grad, optimize='optimal', dtype=self.dtype)
             else:
                 new_grad = np.expand_dims(new.grad, axis=axis)
-                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new_grad, optimize='optimal', dtype=self.dtype)
+                self.grad += c * np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new_grad, optimize='optimal', dtype=self.dtype)
         new.bpass = bpass
         return new
 

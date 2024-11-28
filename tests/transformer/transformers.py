@@ -6,7 +6,8 @@ import numpy as np
 import os, sys
 sys.path.append(os.path.abspath(os.path.dirname('./../../')))
 from autograd.cpu.tensor import Tensor
-from autograd.cpu.basics import Linear, ReLU, AddNorm, Dropout
+from autograd.cpu.basics import Linear, AddNorm, Dropout
+from autograd.cpu.activations import ReLU
 from autograd.cpu.module import Module
 
 PRECISION = np.float64
