@@ -1,6 +1,8 @@
 
+from .tensor import Tensor
 import numpy as np
 import copy
+
 
 class SGD:
     """

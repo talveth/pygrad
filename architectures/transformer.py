@@ -3,8 +3,8 @@
 import numpy as np
 from autograd.cpu.tensor import Tensor
 from autograd.cpu.module import Module
-from autograd.cpu.basics import ReLU, Linear, Dropout, AddNorm
-
+from autograd.cpu.basics import Linear, Dropout, AddNorm
+from autograd.cpu.activations import ReLU
 
 PRECISION = np.float64
 

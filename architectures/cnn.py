@@ -2,8 +2,8 @@
 import numpy as np
 from autograd.cpu.tensor import Tensor
 from autograd.cpu.module import Module
-from autograd.cpu.basics import ReLU, Linear, Dropout, Flatten, Conv2D
-
+from autograd.cpu.basics import Linear, Dropout, Flatten, Conv2D
+from autograd.cpu.activations import ReLU
 
 PRECISION = np.float64
 class CNN(Module):
