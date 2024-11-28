@@ -8,10 +8,11 @@ setup(
                                     "examples",
                                     "tests",
                                     "docs",
+                                    "venv"
                                     ]),
     install_requires=[
-        "numpy>=0.60.0",
-        "numba>=2.0.2",
+        "numba>=0.60.0",
+        "numpy>=2.0.2",
         "opt_einsum>=3.4.0",
     ],
     author="Danila Kurganov",             # Your name
@@ -32,6 +33,6 @@ setup(
     python_requires='>=3.10',
     extras_require={
         "examples": ["dill", "tqdm"],
-        "dev": ["pytest", "sphinx", "torch", "numpy==1.23.0"],  # Add optional development dependencies
+        "dev": ["pytest", "sphinx", "torch", "numpy==1.23.0"]
     },
 )

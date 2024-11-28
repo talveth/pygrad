@@ -83,9 +83,15 @@ class Tensor:
 
     def __repr__(self) -> str:
         if self.shape == ():
-            return f"Tensor=(value={self.value}, name={self.label}, shape={self.shape}, dtype={self.dtype})"
+            if self.label != "":
+                return f"Tensor(name={self.label}, value={self.value}, shape={self.shape}, dtype={self.dtype})"
+            else:
+                return f"Tensor(value={self.value}, shape={self.shape}, dtype={self.dtype})"
         else:
-            return f"Tensor=(name={self.label}, shape={self.shape}, dtype={self.dtype})"
+            if self.label != "":
+                return f"Tensor(name={self.label}, shape={self.shape}, dtype={self.dtype})"
+            else:
+                return f"Tensor(shape={self.shape}, dtype={self.dtype})"
 
     def __getitem__(self, idcs):
         """

@@ -21,7 +21,7 @@ def main():
     # load dataset
     prepare_dataset                 = PrepareDataset()
     max_dataset_length              = 1000
-    dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('./data/english-german-both.pkl', max_len=max_dataset_length, store=True)
+    dataset, enc_vocab, dec_vocab   = prepare_dataset.load_dataset('examples/transformer/english-german-both.pkl', max_len=max_dataset_length, store=True)
     train, test                     = prepare_dataset.train_test_split(dataset, split=0.8, shuffle=True, store=True)
     trainX, trainY                  = prepare_dataset.create_enc_dec_inputs(train, store=True)
     
