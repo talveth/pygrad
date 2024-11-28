@@ -487,8 +487,11 @@ class Tensor:
                 self.grad           += result
 
             elif len(self.shape) == 3:
-                assert self.dtype is not np.float16, "Softmax .grad is not supported for np.float16."
-                self.grad        += softmax_grad(new_val, new.grad)
+                if self.dtype in [np.float16, np.float128]:
+                    raise f"Softmax grad calculations don't support {self.dtype}, casting to np.float64 for calculations."
+                    self.grad        += softmax_grad(new_val.astype(np.float64), new.grad.astype(np.float64)).astype(self.dtype)
+                else:
+                    self.grad        += softmax_grad(new_val, new.grad).astype(self.dtype)
             else:
                 raise "ERROR, self.shape should be 3D or 4D"
         new.bpass           = bpass
@@ -526,9 +529,13 @@ class Tensor:
                 self.grad           += result
 
             elif len(self.shape) == 3:
-                assert self.dtype is not np.float16, "Softmax .grad is not supported for np.float16."
-                new_val              = new_val_exp
-                self.grad           += softmax_grad(new_val, new.grad/new_val)
+                if self.dtype in [np.float16, np.float128]:
+                    raise f"Softmax grad calculations don't support {self.dtype}, casting to np.float64 for calculations."
+                    new_val              = new_val_exp
+                    self.grad        += softmax_grad(new_val.astype(np.float64), new.grad.astype(np.float64)).astype(self.dtype)
+                else:
+                    new_val              = new_val_exp
+                    self.grad        += softmax_grad(new_val, new.grad/new_val).astype(self.dtype)
             else:
                 raise "ERROR, self.shape should be 3D or 4D"
         new.bpass           = bpass
