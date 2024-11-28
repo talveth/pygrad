@@ -31,7 +31,9 @@ jobs:
       - name: make the sphinx docs
         run: |
           echo "$PWD"
+          echo $(ls)
           cd docs
+          echo $(ls)
           make -f Makefile clean
           make -f Makefile html
 
