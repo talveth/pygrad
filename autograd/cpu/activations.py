@@ -1,6 +1,7 @@
 
 from __future__ import annotations
 from typing import Union
+from .tensor import Tensor
 
 class ReLU:
     """

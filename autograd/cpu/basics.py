@@ -2,9 +2,8 @@
 from __future__ import annotations
 import numpy as np
 from .tensor import Tensor
+from .constants import PRECISION
 from typing import Union
-
-PRECISION = np.float64
 
 class Dropout:
     """
@@ -62,7 +61,7 @@ class AddNorm:
         outsum          = x + skip
         mu              = outsum.mean(axis=-1,keepdims=True)
         sd              = outsum.std(axis=-1)
-        outsum_normed   = self.gain * (outsum - mu) * ((sd**2 + self.epsilon)**-0.5) + bias
+        outsum_normed   = self.gain * (outsum - mu) * ((sd**2 + self.epsilon)**-0.5) + self.bias
         return outsum_normed
 
 
@@ -127,8 +126,8 @@ class Linear:
         if self.B is not None:
             if self.B.shape[0] != x.shape[0]:
                 self.B.new_value(np.repeat(self.B.value, x.shape[0], axis=0))
-            assert self.B.shape[0] == x.shape[0],               "ERROR, shape of self.B should be (x.shape[0], ...)"
-        assert self.W.shape[0] == x.shape[0],                   "ERROR, shape of self.W should be (x.shape[0], ...)"
+            assert self.B.shape[0] == x.shape[0],               f"ERROR, shape of self.B should be (x.shape[0], ...), got {self.B.shape, x.shape}"
+        assert self.W.shape[0] == x.shape[0],                    "ERROR, shape of self.W should be (x.shape[0], ...)"
 
         if self.bias:
             out         = x@self.W + (self.B).reshape((self.B.shape[0], 1, self.B.shape[-1]))

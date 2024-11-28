@@ -1,6 +1,7 @@
 
 from __future__ import annotations
 from typing import Union
+from .constants import PRECISION
 
 import numpy as np
 from .numba_ops import softmax_grad
@@ -11,7 +12,9 @@ class Tensor:
     """
     The main Tensor object.
     """
-    def __init__(self, value:Union[list, np.ndarray], label:str="",  dtype=np.float64, learnable:bool=True, leaf:bool=False, _prev:tuple=()) -> None:
+    __slots__ = 'value', 'label', 'dtype', 'learnable', 'leaf', 'shape', '_prev', 'topo', 'weights', 'grad', 'bpass'
+
+    def __init__(self, value:Union[list, np.ndarray], label:str="",  dtype=PRECISION, learnable:bool=True, leaf:bool=False, _prev:tuple=()) -> None:
         """
         Initializes a Tensor. 
         
@@ -64,9 +67,8 @@ class Tensor:
         self._prev:tuple    = _prev
         self.topo           = None
         self.weights        = None
-        self.grad           = np.zeros_like(self.value).view(self.dtype)
+        self.grad           = np.zeros_like(self.value, dtype=self.dtype)
         self.bpass          = lambda : None
-        # self.n_conv_calls   = 0
         np.seterr(all='ignore')
 
     def _is_valid_value(self, value, with_tensor:bool=False)->tuple:
@@ -93,7 +95,7 @@ class Tensor:
 
     def reset_grad(self)->None:
         """Resets the gradient of the Tensor to 0, maintaining all other attributes."""
-        self.grad  = np.zeros_like(self.value).view(self.dtype)
+        self.grad  = np.zeros_like(self.value, dtype=self.dtype)
 
     def new_value(self, x)->None:
         """
@@ -184,10 +186,10 @@ class Tensor:
         new                 = Tensor(value=new_val, _prev=(self,), learnable=True, leaf=True, dtype=self.dtype)
         def bpass():
             if keepdims:
-                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal', dtype=self.dtype)
+                self.grad  += np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new.grad, optimize='optimal', dtype=self.dtype)
             else:
                 new_grad    = np.expand_dims(new.grad, axis=axis)
-                self.grad  += np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal', dtype=self.dtype)
+                self.grad  += np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new_grad, optimize='optimal', dtype=self.dtype)
         new.bpass       = bpass
         return new
 
@@ -261,7 +263,7 @@ class Tensor:
         new_val     = np.transpose(self.value, axes)
         new         = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
-            self.grad   += np.transpose(new.grad, self._invert_axes(axes), dtype=self.dtype)
+            self.grad   += np.transpose(new.grad, self._invert_axes(axes))
         new.bpass       = bpass
         return new
 
@@ -274,7 +276,7 @@ class Tensor:
         :param keepdims: Whether or not to keep the existing dimensions. True is yes.
         :type keepdims: bool
         """
-        assert isinstance(axis, int, tuple) or axis is None, "axis must be an integer, tuple of ints, or None"
+        assert isinstance(axis, (int, tuple)) or axis is None, "axis must be an integer, tuple of ints, or None"
         assert isinstance(keepdims, bool),  "keepdims must be a boolean value"
 
         new_val = np.mean(self.value, axis=axis, keepdims=keepdims, dtype=self.dtype)
@@ -289,10 +291,10 @@ class Tensor:
                 c = np.prod([self.shape[ax] for ax in axis])
 
             if keepdims:
-                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape), new.grad, optimize='optimal', dtype=self.dtype)
+                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new.grad, optimize='optimal', dtype=self.dtype)
             else:
                 new_grad = np.expand_dims(new.grad, axis=axis)
-                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape), new_grad, optimize='optimal', dtype=self.dtype)
+                self.grad += (1/c) * np.einsum('...,...->...', np.ones(self.shape, dtype=self.dtype), new_grad, optimize='optimal', dtype=self.dtype)
         new.bpass = bpass
         return new
 
@@ -432,6 +434,21 @@ class Tensor:
         new.bpass = bpass
         return new
 
+    def log(self)->Tensor:
+        """
+        Applies the natural logarithm to self.
+
+        Negative values will raise an error.
+        """
+        # self.value[self.value<1e-6] = 1e-6
+        assert np.min(self.value) >= 0,      f"Ensure the value of self is non-negative before logging, got {np.min(self.value)}"
+        log_val             = np.log(self.value)
+        new                 = Tensor(value=log_val, _prev=(self,), leaf=True, dtype=self.dtype)
+        def bpass():
+            self.grad      += new.grad/self.value
+        new.bpass           = bpass
+        return new
+
     def softmax(self)->Tensor:
         """
         Applies softmax to self. Softmax is performed on the last axis.
@@ -443,11 +460,8 @@ class Tensor:
         Returns a copy of the Tensor, with the softmax'd value.
         """
         assert len(self.shape) in [3,4], f"Ensure len(self.shape) in [3, 4], got {len(self.shape)}"
-        max_normalized_self = self.value - np.max(self.value, axis=-1, keepdims=True)
-        numerator           = np.exp(max_normalized_self)
-        denominator         = np.sum(numerator, axis=-1, keepdims=True)
-        new_val             = np.divide(numerator, denominator) # (..., n, k)
-        new_val[np.all(np.isclose(self.value, -1e9), axis=-1)] = 1/self.value.shape[-1]
+        max_vals            = np.max(self.value, axis=-1, keepdims=True)
+        new_val             = np.exp(self.value - (max_vals+np.log(np.sum(np.exp(self.value-max_vals), axis=-1, keepdims=True))))
         new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)    # 
         w                   = new_val.shape[-1]
         
@@ -456,11 +470,10 @@ class Tensor:
                 def add_newaxis(arr, num_axes):
                     return arr[tuple([np.newaxis] * num_axes + [slice(None)] * arr.ndim)]
                 
-                np_eye          = add_newaxis(np.eye(w), len(new_val.shape)-2)
-                diag_elem       = np.einsum('...hn,...inm->...hnm', new_val, np_eye, optimize='optimal', dtype=self.dtype)
-                new_val_reshape = np.expand_dims(new_val, axis=-2)
-                nondiags        = np.einsum('...ji,...jk->...ik', new_val_reshape, new_val_reshape, optimize='optimal', dtype=self.dtype)
-                sum_grad        = diag_elem-nondiags
+                np_eye          = add_newaxis(np.eye(w, dtype=self.dtype), len(new_val.shape)-2)
+                diag_elem       = np.einsum('...hn,...inm->...hnm', new_val, np_eye, optimize='optimal', dtype=self.dtype); del np_eye
+                nondiags        = np.einsum('...ji,...jk->...ik', np.expand_dims(new_val, axis=-2), np.expand_dims(new_val, axis=-2), optimize='optimal', dtype=self.dtype)
+                sum_grad        = diag_elem-nondiags; del diag_elem
                 new_grad        = np.transpose(new.grad[...,np.newaxis,:,:], (0,1,2,4,3))
                 pre_self_grad       = sum_grad@new_grad
                 idx                 = np.arange(pre_self_grad.shape[2])
@@ -473,6 +486,47 @@ class Tensor:
                 raise "ERROR, self.shape should be 3D or 4D"
         new.bpass           = bpass
         return new
+
+    def softmax_log(self)->Tensor:
+        """
+        Computes .softmax().log() in one go. Use this if the former has numerical issues.
+        
+        self.shape has to be either 3 or 4 dimensional.
+            - (B, H, W)
+            - (B, O, H, W)
+
+        Returns a copy of the Tensor, with the softmax'd value.
+        """
+        assert len(self.shape) in [3,4], f"Ensure len(self.shape) in [3, 4], got {len(self.shape)}"
+        max_vals            = np.max(self.value, axis=-1, keepdims=True)
+        new_val             = self.value - (max_vals+np.log(np.sum(np.exp(self.value-max_vals), axis=-1, keepdims=True)))
+        new_val_exp         = np.exp(new_val)
+        new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
+
+        def bpass():
+            if len(self.shape) == 4:
+                def add_newaxis(arr, num_axes):
+                    return arr[tuple([np.newaxis] * num_axes + [slice(None)] * arr.ndim)]
+                new_val         = new_val_exp
+                np_eye          = add_newaxis(np.eye(new_val.shape[-1], dtype=self.dtype), len(new_val.shape)-2)
+                diag_elem       = np.einsum('...hn,...inm->...hnm', new_val, np_eye, optimize='optimal', dtype=self.dtype); del np_eye
+                nondiags            = np.einsum('...ji,...jk->...ik', np.expand_dims(new_val, axis=-2), np.expand_dims(new_val, axis=-2), optimize='optimal', dtype=self.dtype)
+                sum_grad            = diag_elem-nondiags; del diag_elem
+                new_grad            = np.transpose((new.grad/new_val)[...,np.newaxis,:,:], (0,1,2,4,3))
+                pre_self_grad       = sum_grad@new_grad
+                idx                 = np.arange(pre_self_grad.shape[2])
+                result              = np.transpose(pre_self_grad[:,:,idx,:,idx], (1,2,0,3))
+                self.grad           += result
+
+            elif len(self.shape) == 3:
+                new_val              = new_val_exp
+                self.grad           += softmax_grad(new_val, new.grad/new_val)
+            else:
+                raise "ERROR, self.shape should be 3D or 4D"
+        new.bpass           = bpass
+        return new
+
+
 
     def sigmoid(self)->Tensor:
         """
@@ -487,21 +541,6 @@ class Tensor:
         new                 = Tensor(value=new_val, _prev=(self,), leaf=True, dtype=self.dtype)
         def bpass():
             self.grad      += new_val * (1-new_val) * new.grad
-        new.bpass           = bpass
-        return new
-
-    def log(self)->Tensor:
-        """
-        Applies the natural logarithm to self.
-
-        Negative values will raise an error.
-        """
-        assert np.min(self.value) >= 0,      "Ensure the value of self is non-negative before logging"
-        log_val             = np.log(self.value)
-        new                 = Tensor(value=log_val, _prev=(self,), leaf=True, dtype=self.dtype)
-        def bpass():
-            multiplier      = 1/self.value
-            self.grad      += multiplier * new.grad
         new.bpass           = bpass
         return new
 
@@ -616,7 +655,7 @@ class Tensor:
         if reset_grad:
             for node in self.topo:
                 node.reset_grad()
-        self.grad = np.ones_like(self.value, dtype=self.dtype)
+        self.grad               = np.ones_like(self.value, dtype=self.dtype)
         for node in reversed(self.topo):
             node.bpass()
 

@@ -107,20 +107,21 @@ def accuracy_fn(y_pred:np.ndarray, y_true:np.ndarray):
 	return np.sum(unmasked_acc * mask)/np.sum(mask)
 
 def infer_one(model, prepare_dataset):
-    encoder_input   = Tensor(np.array(prepare_dataset.trainX[0:0+1,1:]), leaf=True)
-    decoder_input   = Tensor(np.array(prepare_dataset.trainY[0:0+1,:-1]), leaf=True)
-    decoder_output  = Tensor(np.array(prepare_dataset.trainY[0:0+1,1:]), leaf=True)
-    y_pred          = model(enc_inp=encoder_input, dec_inp=decoder_input, training=True)            # calls either new or same model copy
+	model.model_reset()
+	encoder_input   = Tensor(np.array(prepare_dataset.trainX[0:0+1,1:]), leaf=True)
+	decoder_input   = Tensor(np.array(prepare_dataset.trainY[0:0+1,:-1]), leaf=True)
+	decoder_output  = Tensor(np.array(prepare_dataset.trainY[0:0+1,1:]), leaf=True)
+	y_pred          = model(enc_inp=encoder_input, dec_inp=decoder_input, training=True)            # calls either new or same model copy
 
-    inp_txt         = prepare_dataset.tokens_to_words(encoder_input.value, prepare_dataset.enc_dataset_vocab)[0]
-    inp_txt_d       = prepare_dataset.tokens_to_words(decoder_input.value, prepare_dataset.dec_dataset_vocab)[0]
-    pred_txt        = prepare_dataset.tokens_to_words(np.argmax(y_pred.softmax().value, axis=-1), prepare_dataset.dec_dataset_vocab)[0]
-    act_txt         = prepare_dataset.tokens_to_words(decoder_output.value, prepare_dataset.dec_dataset_vocab)[0]
-    print(f"ine_txt: {inp_txt.split('<EOS>', 1)[0]}<EOS>")
-    print(f"ind_txt: {inp_txt_d.split('<EOS>', 1)[0]}")
-    print(f"prd_txt: {pred_txt.split('<EOS>', 1)[0]}<EOS>")
-    print(f"act_txt: {act_txt.split('<EOS>', 1)[0]}<EOS>")
-    model.model_reset()
+	inp_txt         = prepare_dataset.tokens_to_words(encoder_input.value, prepare_dataset.enc_dataset_vocab)[0]
+	inp_txt_d       = prepare_dataset.tokens_to_words(decoder_input.value, prepare_dataset.dec_dataset_vocab)[0]
+	pred_txt        = prepare_dataset.tokens_to_words(np.argmax(y_pred.softmax().value, axis=-1), prepare_dataset.dec_dataset_vocab)[0]
+	act_txt         = prepare_dataset.tokens_to_words(decoder_output.value, prepare_dataset.dec_dataset_vocab)[0]
+	print(f"ine_txt: {inp_txt.split('<EOS>', 1)[0]}<EOS>")
+	print(f"ind_txt: {inp_txt_d.split('<EOS>', 1)[0]}")
+	print(f"prd_txt: {pred_txt.split('<EOS>', 1)[0]}<EOS>")
+	print(f"act_txt: {act_txt.split('<EOS>', 1)[0]}<EOS>")
+	model.model_reset()
 
 def save_model(save_dir, model, prepare_dataset):
 

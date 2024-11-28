@@ -15,6 +15,7 @@ import numpy as np
 import tqdm
 import gc
 
+
 def main():
 
     # load dataset
@@ -45,21 +46,23 @@ def main():
     n_epochs                = 50
     batch_size              = 64
     mini_batchsize          = 8
-    optimizer               = Adam(model.weights, beta1=0.9, beta2=0.98, eps=1e-6, lr=1)
+    optimizer               = Adam(model.weights, beta1=0.9, beta2=0.98, eps=1e-6, lr=1.0)
     warmup_steps            = 4000
 
     def train_one_minibatch(step_num, i, pbar, batch_size, mini_batchsize):
         i_copy          = i
         optimizer.zero_grad()
+        model.model_reset()
+
         loss_avg        = []
         y_preds, targets= [], []
         
         for _ in range(0, batch_size, mini_batchsize):
-            if i_copy+mini_batchsize > len(trainX):
-                continue
             encoder_input   = Tensor(trainX[i_copy:i_copy+mini_batchsize,1:], leaf=True)
             decoder_input   = Tensor(trainY[i_copy:i_copy+mini_batchsize,:-1], leaf=True)
             decoder_output  = Tensor(trainY[i_copy:i_copy+mini_batchsize,1:], leaf=True)
+            if encoder_input.shape[0] != mini_batchsize or decoder_input.shape[0]!= mini_batchsize:
+                break
             y_pred          = model(enc_inp=encoder_input, dec_inp=decoder_input, training=True)  # calls either new or same model copy
             target_labels   = Tensor(model.onehot_tokens(decoder_output), learnable=False, leaf=True)
             loss            = loss_fn(y_pred, target_labels, mask=True)
@@ -84,16 +87,15 @@ def main():
         
         accuracy_fn(y_pred.value, target_labels.value).item()
         optimizer.step_single(loss, batch_size, modify=True)
-        model.model_reset()
         gc.collect()
         return loss_avg
 
     print("starting training")
     step_num                = 1
     for e in range(n_epochs):
-        random_perms = np.random.permutation(trainX.shape[0])
-        trainX = np.array(trainX)[random_perms]
-        trainY = np.array(trainY)[random_perms]
+        # random_perms = np.random.permutation(trainX.shape[0])
+        # trainX = np.array(trainX)[random_perms]
+        # trainY = np.array(trainY)[random_perms]
         losses = []
         with tqdm.tqdm(range(0, len(trainX)-batch_size, batch_size)) as pbar:
             for i in pbar:

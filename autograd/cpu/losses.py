@@ -69,15 +69,14 @@ class CCELoss:
             target = target.reshape((-1,1,target.shape[-1]))
         
         if not mask:
-            loss             = (target * (pred.softmax().log())).sum(axis=(0,1,2))
+            loss             = (target * (pred.softmax_log())).sum(axis=(0,1,2))
             loss_multiplier  = Tensor(value=np.ones_like(loss.value)*(-1/pred.shape[0]))
             loss             = loss * loss_multiplier
         else:
-            # fix scalar issue
             mask_np          = (target[:,:,0] != 1)[...,None]
             eos_no_mask      = ((target[:,:,0] == 1).cumsum(axis=1) == 1)[...,None]
             mask             = Tensor(mask_np | eos_no_mask, learnable=False, leaf=True)
-            loss             = ((target*mask)*(pred.softmax().log())).sum(axis=(0,1,2))
+            loss             = ((target*mask)*(pred.softmax_log())).sum(axis=(0,1,2))
             loss_multiplier  = Tensor(value=np.ones_like(loss.value)*(-1/np.sum(mask[:])))
             loss             = loss * loss_multiplier
         return loss
