@@ -8,6 +8,13 @@ Included is a differentiable Tensor class, layers such as Dropout/Linear/Attenti
 
 The main component is the `Tensor` class supporting many math operations. `Tensor`s have `.value` and `.grad` attributes, gradients being populated by calling `.backward()` on either self or any of its children. They can be used standalone, or for constructing more complex architectures such as a vanilla Transformer.
 
+#### Installation
+
+```bash
+git clone https://github.com/baubels/pygrad.git
+pip install . (or .[examples] or .[dev])
+```
+
 #### Usage
 
 Tensors accept the same input value as a NumPy array. Create them with Tensor(value) or tensor.array(value).
@@ -61,6 +68,7 @@ There are enough expressions defined to be able to create many neural networks.
 | Optimizers       | SGD, SGD_Momentum, RMSProp, Adam                           | NumPy        |
 | Architectures    | DNN, CNN, Vanila Transformer                               | NumPy/Numba  |
 
+For example usage and in-depth descriptions of each component of pygrad, check out [the docs](https://baubels.github.io/pygrad/).
 
 #### Citation/Contribution
 
