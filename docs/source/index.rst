@@ -10,16 +10,13 @@ pygrad documentation
 **pygrad** is a lightweight automatic differentiation engine written entirely in Python, 
 relying only on NumPy/Numba/opt_einsum, verified against Pytorch*, and less than 300 KBs in size.
 
-Pygrad's ``Tensor`` object takes as input numbers, lists, or NumPy arrays, now providing a ``.grad`` attribute.
+Pygrad's ``Tensor`` object operates like a NumPy array, additionally storing gradients.
 
 ``Tensors``:
-   * Store all operations performed on them, with support for broadcasting
+   * Store operations performed on them, with support for broadcasting
    * Perform backpropagation with ``.backward()``
    * Store gradients in ``.grad``
    * Support np.float16 to np.float128 data types
-
-This documentation includes examples using Tensors to perform gradient descent on the very 
-simplest of functions to training a Vaswani Transformer with Adam.
 
 A simple example performing gradient descent on a Tensor:
 
@@ -39,6 +36,8 @@ A simple example performing gradient descent on a Tensor:
 
       x.value, loss_fn(y,yh).value        # 0.5, 0
 
+This documentation includes examples using Tensors to perform gradient descent on the very 
+simplest of functions to training a Vaswani Transformer with Adam.
 
 For installation instructions and a quick glance at usage, see :doc:`usage`.
 All classes and functions can be found in :doc:`api`.
