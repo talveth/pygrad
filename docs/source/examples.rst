@@ -52,15 +52,6 @@ Attributes after basic ops:
     c.weights   # -> [a,b]
 
 
-Many ops:
-------------------------
-
-.. code-block:: Python
-
-    from pygrad.tensor import Tensor
-    a = Tensor(1)
-    
-
 Working with NumPy arrays:
 ---------------------------
 
