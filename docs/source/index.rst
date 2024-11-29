@@ -1,3 +1,4 @@
+
 .. pygrad documentation master file, created by
    sphinx-quickstart on Wed Nov 20 23:06:32 2024.
    You can adapt this file completely to your liking, but it should at least
@@ -6,12 +7,31 @@
 pygrad documentation
 =========================
 
-**pygrad** is a lightweight automatic differentiation (pygrad) engine written entirely in Python, 
+**pygrad** is a lightweight automatic differentiation engine written entirely in Python, 
 relying only on NumPy and Numba, verified against Pytorch*, and less than 300 KBs in size.
-It automatically tracks derivatives, being able to both natively compute derivatives and apply gradient descent to any produced function. 
+
+Derivatives are automatically tracked, being able to both natively compute derivatives and apply gradient descent to any produced function. 
 Any np.floating data type is supported, thus allowing for 16-bit to 128-bit values and gradients if required. 
+
 This documentation includes examples performing gradient descent on the very 
 simplest of functions to training a Vaswani Transformer with Adam.
+
+A simple example performing gradient descent on a Tensor:
+
+.. code-block:: Python
+
+      from pygrad.tensor import Tensor
+
+      loss_fn = lambda y, yh: (y-yh)**2
+      x       = Tensor(1)                 # Tensor
+      yh      = 0.5                       # float
+
+      for _ in range(1000):
+         loss_fn(x,yh).backward()         # populates x.grad
+         x.value = x.value - 0.01*x.grad  # gradient descent
+
+      x.value, loss_fn(x,yh).value  # 0.5, 0
+
 
 For installation instructions and a quick glance at usage, see :doc:`usage`.
 All classes and functions can be found in :doc:`api`.

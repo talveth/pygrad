@@ -3,8 +3,80 @@
 
 Examples
 =========
-The below shows reproducible training scripts performing gradient descent on a variety of functions.
 
+Attributes:
+------------------------
+
+.. code-block:: Python
+
+    from pygrad.tensor import Tensor
+    a = Tensor(1)
+    a.value     # -> 1.0
+    a.grad      # -> 0.0
+    a.label     # -> ""
+    a.dtype     # -> PRECISION (pygrad.constants)
+    a.learnable # -> True
+    a.leaf      # -> False
+    a._prev     # -> ()
+
+    # calling a.backward()
+    a.grad      # -> 1.0
+    a.topo      # -> [a]
+    a.weights   # -> [a]
+
+
+Attributes after basic ops:
+---------------------------
+
+.. code-block:: Python
+
+    from pygrad.tensor import Tensor
+    a = Tensor(1, label="a")
+    b = Tensor(2)
+    c = a*b
+    c.value     # -> 2.0
+    c.grad      # -> 0.0
+    a.label     # -> "a"
+    c.label     # -> ""
+    c.dtype     # -> PRECISION (pygrad.constants)
+    c.learnable # -> True
+    c.leaf      # -> False
+    c._prev     # -> (a,b)
+
+    # calling c.backward()
+    a.grad      # -> 2.0
+    b.grad      # -> 1.0
+    a.topo      # -> []
+    b.topo      # -> []
+    c.topo      # -> [a, b, c]
+    c.weights   # -> [a,b]
+
+
+Many ops:
+------------------------
+
+.. code-block:: Python
+
+    from pygrad.tensor import Tensor
+    a = Tensor(1)
+    
+
+Working with NumPy arrays:
+---------------------------
+
+.. code-block:: Python
+
+    from pygrad.tensor import Tensor
+    import numpy as np
+    x   = np.random.uniform(0,1,(10,5))
+    xt1 = Tensor(x)
+    
+    xt1.value       # -> x
+    xt1.grad.shape  # -> x.shape
+
+    x + 1           # -> broadcasted x + 1
+    x*10            # -> broadcasted x * 10
+    
 
 Manual Gradient Descent:
 ------------------------
@@ -17,8 +89,8 @@ Manual Gradient Descent:
     x       = Tensor(1)
 
     for _ in range(n_iters):
-        loss_fn = (x-1.5)**2
-        loss_fn.backward(reset_grad=True)
+        loss_fn = (x-1.5)**2                    # define a loss function
+        loss_fn.backward(reset_grad=True)       # run .backward() to compute gradients
         x.value = x.value - stepsize*x.grad
 
     print(x.value, loss_fn.value)
@@ -50,6 +122,8 @@ Gradient Descent with ``optim``:
 
 Full Deep Neural Network:
 -------------------------
+
+Note, the following requires the MNIST dataset.
 
 .. code-block:: Python
 

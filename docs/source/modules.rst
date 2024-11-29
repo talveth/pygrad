@@ -41,10 +41,38 @@ Operations and Topological Graphs
     * dunder methods: __add__, __sub__, __neg__, __truediv__, __mul__, __matmul__, __pow__
     * other common ops: sum, reshape, transpose, T, mean, std, conv2D, mask_idcs
     * activations: relu, tanh, sigmoid, softmax
+    * NumPy-level broadcasting and slicing
+
+For example, the below are all valid:
+
+.. code-block:: Python
+
+    x = Tensor(value=np.ones((10,20,30)))
+
+    # built-ins
+    y = x + 2*x - x/2 + 3
+    y = (x**2)@np.ones((10,30,20))
+    y = x @ np.ones((1,20,30))      # broadcasting is performed
+    y = (-1*(x+2*x-3*x)/4 @ np.ones((10,30,20))) **2
+
+    # other
+    y = x.sum(axis=0); x.sum(axis=(0,1,2)); x.sum()
+    y = x.mean() + x.std()
+    y = x.transpose(); x.T
+    y = x.reshape((30,-1))
+    x2     = np.ones((1, 3, 32, 32))
+    kernel = np.ones((1, 1, 3, kH=5, kW=5))
+    kernel.Conv2D(x2)
+
+    # activations
+    x.relu()
+    x.tanh()
+    x.reshape((-1,20,1)).sigmoid()
+    x.softmax()
 
 Applying an operation on a `Tensor` will always produce a new Tensor whose operands are those Tensors' children.
 By applying successive operations on a `Tensor`, a computational graph is built and stored, thus, each `Tensor`
-has memory of the `Tensors` used to create it. 
+has memory of the `Tensors` used to create it. The direct children of a Tensor can be found in its ``._prev`` attribute.
 
 A `Tensor`'s computational graph can be generated at any point in time with `.create_graph()`. 
 This method returns two computational graphs: a complete topological graph, ``topo`` and a weights-only graph ``weights``.
