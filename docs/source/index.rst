@@ -8,12 +8,17 @@ pygrad documentation
 =========================
 
 **pygrad** is a lightweight automatic differentiation engine written entirely in Python, 
-relying only on NumPy and Numba, verified against Pytorch*, and less than 300 KBs in size.
+relying only on NumPy/Numba/opt_einsum, verified against Pytorch*, and less than 300 KBs in size.
 
-Derivatives are automatically tracked, being able to both natively compute derivatives and apply gradient descent to any produced function. 
-Any np.floating data type is supported, thus allowing for 16-bit to 128-bit values and gradients if required. 
+Pygrad's ``Tensor`` object takes as input numbers, lists, or NumPy arrays, now providing a ``.grad`` attribute.
 
-This documentation includes examples performing gradient descent on the very 
+``Tensors``:
+   * Store all operations performed on them
+   * Perform backpropagation with ``.backward()``
+   * Store gradients in ``.grad``
+   * Support np.float16 to np.float128 data types
+
+This documentation includes examples using Tensors to perform gradient descent on the very 
 simplest of functions to training a Vaswani Transformer with Adam.
 
 A simple example performing gradient descent on a Tensor:
@@ -22,15 +27,17 @@ A simple example performing gradient descent on a Tensor:
 
       from pygrad.tensor import Tensor
 
-      loss_fn = lambda y, yh: (y-yh)**2
+      loss_fn = lambda y, yh: (y-yh)**2   # L2 norm
       x       = Tensor(1)                 # Tensor
+      y       = x**2 + 0.25               # model
       yh      = 0.5                       # float
 
       for _ in range(1000):
-         loss_fn(x,yh).backward()         # populates x.grad
+         y    = x**2 + 0.25               # fwd pass
+         loss_fn(y,yh).backward()         # populates x.grad
          x.value = x.value - 0.01*x.grad  # gradient descent
 
-      x.value, loss_fn(x,yh).value  # 0.5, 0
+      x.value, loss_fn(y,yh).value        # 0.5, 0
 
 
 For installation instructions and a quick glance at usage, see :doc:`usage`.
@@ -52,5 +59,5 @@ For in-depth module descriptions, check out :doc:`modules`.
    methods
 
 .. note::
-   All operations are verified against Pytorch, except for Conv2D gradients 
-   when performing strictly more than 1 backwards pass.
+   *All operations are verified against Pytorch, except for Conv2D gradients 
+   when performing strictly more than 1 backwards pass when ``reset_grad=False``.
