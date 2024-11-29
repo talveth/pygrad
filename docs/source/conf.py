@@ -48,3 +48,19 @@ exclude_patterns = []
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+html_sidebars = {
+    '**': [
+        'about.html',
+        'searchfield.html',
+        'navigation.html',
+        'relations.html',
+    ]
+}
+
+html_theme_options = {
+    "description": "A light autodifferentiation engine written in Python, based on NumPy and Numba.",
+    "github_user": "baubels",
+    "github_repo": "danila-grad",
+    "fixed_sidebar": True,
+    "github_banner": True,
+}
