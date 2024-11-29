@@ -2,28 +2,27 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="danila_grad",
+    name="pygrad",
     version="0.0.1",
     packages=find_packages(exclude=[
                                     "examples",
                                     "tests",
                                     "docs",
-                                    "venv"
                                     ]),
     install_requires=[
         "numba>=0.60.0",
         "numpy",
         "opt_einsum>=3.4.0",
     ],
-    author="Danila Kurganov",             # Your name
-    author_email="dan.kurg@gmail.com",    # Your email
+    author="Danila Kurganov",
+    author_email="dan.kurg@gmail.com",
     description="Automatic Differentiation in Python using Numpy/Numba",
     long_description=open("README.md").read(),
-    url="https://github.com/baubels/danila-grad",
+    url="https://github.com/baubels/pygrad",
     project_urls={
-        "Documentation": "https://baubels.github.io/danila-grad/",
-        "Source Code": "https://github.com/baubels/danila-grad",
-        "Issue Tracker": "https://github.com/baubels/danila-grad/issues",
+        "Documentation": "https://baubels.github.io/pygrad/",
+        "Source Code": "https://github.com/baubels/pygrad",
+        "Issue Tracker": "https://github.com/baubels/pygrad/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",

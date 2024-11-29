@@ -4,7 +4,7 @@ message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Kurganov"
   given-names: "Danila"
-title: "danila-grad"
+title: "pygrad"
 version: 0.0.1
 date-released: 2024-10-25
-url: "https://github.com/baubels/danila-grad"
+url: "https://github.com/baubels/pygrad"

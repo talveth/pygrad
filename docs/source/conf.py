@@ -23,7 +23,7 @@ for root, dirs, files in os.walk(base_directory):
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'danila-grad'
+project = 'pygrad'
 copyright = '2024, Danila Kurganov'
 author = 'Danila Kurganov'
 release = '0.0.1'
@@ -60,7 +60,7 @@ html_sidebars = {
 html_theme_options = {
     "description": "A light autodifferentiation engine written in Python, based on NumPy and Numba.",
     "github_user": "baubels",
-    "github_repo": "danila-grad",
+    "github_repo": "pygrad",
     "fixed_sidebar": True,
     "github_banner": True,
 }

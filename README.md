@@ -1,7 +1,7 @@
 
-### danila-grad: Lightweight automatic differentiation engine in NumPy/Numba.
+### pygrad: Lightweight automatic differentiation engine in NumPy/Numba.
 
-This is a lightweight automatic differentiation engine based on NumPy and Numba. Included is a differentiable Tensor class, layers such as Dropout/Linear/Attention, loss functions such as BCE/CCE, optimizers such as SGD/RMSProp/Adam, and a DNN/CNN/Transformer architecture. Documentation can be found at: https://baubels.github.io/danila-grad/.
+This is a lightweight automatic differentiation engine based on NumPy and Numba. Included is a differentiable Tensor class, layers such as Dropout/Linear/Attention, loss functions such as BCE/CCE, optimizers such as SGD/RMSProp/Adam, and a DNN/CNN/Transformer architecture. Documentation can be found at: https://baubels.github.io/pygrad/.
 
 The main component is the `Tensor` class supporting common math operations shown in the table below. `Tensor`s have `.value` and `.grad` attributes, gradients being populated by calling `.backward()` on either self or any of its children. They can be used standalone, or for constructing more complex architectures such as a vanilla Transformer.
 

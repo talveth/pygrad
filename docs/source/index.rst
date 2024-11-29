@@ -1,12 +1,12 @@
-.. danila-grad documentation master file, created by
+.. pygrad documentation master file, created by
    sphinx-quickstart on Wed Nov 20 23:06:32 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-danila-grad documentation
+pygrad documentation
 =========================
 
-**danila-grad** is a lightweight automatic differentiation (autograd) engine written entirely in Python, 
+**pygrad** is a lightweight automatic differentiation (autograd) engine written entirely in Python, 
 relying only on NumPy and Numba, verified against Pytorch*, and less than 300 KBs in size.
 It automatically tracks derivatives, being able to both natively compute derivatives and apply gradient descent to any produced function. 
 Any np.floating data type is supported, thus allowing for 16-bit to 128-bit values and gradients if required. 

@@ -6,7 +6,7 @@ Usage
 Installation
 ------------
 
-To use danila-grad, clone `the repository <https://github.com/baubels/danila-grad>`_ and install one of the following.
+To use pygrad, clone `the repository <https://github.com/baubels/pygrad>`_ and install one of the following.
 
 .. code-block:: console
 
@@ -14,7 +14,7 @@ To use danila-grad, clone `the repository <https://github.com/baubels/danila-gra
    $ pip install .[examples]     # normal + examples
    $ pip install .[dev]          # normal + dev
 
-This will install danila-grad with the Python importable name ``autograd``.
+This will install pygrad with the Python importable name ``autograd``.
 
 
 Basic Usage
