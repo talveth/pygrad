@@ -1,6 +1,10 @@
 
-import numpy as np
+"""
+Module storing numba-defined optimizations.
+"""
+
 import numba as nb
+import numpy as np
 from numba import prange
 
 

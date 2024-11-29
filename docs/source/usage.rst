@@ -6,11 +6,13 @@ Usage
 Installation
 ------------
 
-To use danila-grad, clone the repository and then install with pip:
+To use danila-grad, clone `the repository <https://github.com/baubels/danila-grad>`_ and install one of the following.
 
 .. code-block:: console
 
-   $ pip install danila-grad
+   $ pip install .               # normal install
+   $ pip install .[examples]     # normal + examples
+   $ pip install .[dev]          # normal + dev
 
 This will install danila-grad with the Python importable name ``autograd``.
 
@@ -31,8 +33,10 @@ The below shows performing backprop on a function ``y``.
    print(y.grad, x.grad) 
    # -> 1.0, 2.0
 
+For more details, see :ref:`tensor`.
 
-*Common deep learning layers* can be found in ``autograd.cpu.basics``. The below shows finding the gradient of a Dense linear layer.
+*Common deep learning layers* can be found in ``autograd.cpu.basics`` (:ref:`basics`). 
+The below finds the gradient of a Dense linear layer.
 
 .. code-block:: Python
 
@@ -47,7 +51,7 @@ The below shows performing backprop on a function ``y``.
     # -> (1, 1, 1) (1, 1, 1) (1, 2, 1) (1, 1, 1) (1, 1, 2)
 
 
-*Gradient Descent schemes* can be found in ``autograd.cpu.optims``. 
+*Gradient Descent schemes* can be found in ``autograd.cpu.optims`` (:ref:`optims`).
 The below shows an example of minimizing the L2 loss between ``y`` and ``1.5`` using the ``SGD`` class.
 
 .. code-block:: Python
@@ -68,3 +72,5 @@ The below shows an example of minimizing the L2 loss between ``y`` and ``1.5`` u
 
     print(x.value, y.value, loss.value) 
     # -> 0.7100436 1.50433688 1.88085134e-05
+
+For more details on the modules see :ref:`modules`, for API, see :ref:`api`.

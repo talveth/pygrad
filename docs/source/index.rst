@@ -6,10 +6,12 @@
 danila-grad documentation
 =========================
 
-**danila-grad** is a lightweight automatic differentiation (autograd) engine written entirely in Python, relying only on NumPy and Numba, verified against Pytorch*, and only KBs in size.
+**danila-grad** is a lightweight automatic differentiation (autograd) engine written entirely in Python, 
+relying only on NumPy and Numba, verified against Pytorch*, and less than 300 KBs in size.
 It automatically tracks derivatives, being able to both natively compute derivatives and apply gradient descent to any produced function. 
 Any np.floating data type is supported, thus allowing for 16-bit to 128-bit values and gradients if required. 
-Included are examples performing gradient descent on the very simplest of functions to training a Vaswani Transformer with Adam.
+This documentation includes examples performing gradient descent on the very 
+simplest of functions to training a Vaswani Transformer with Adam.
 
 For installation instructions and a quick glance at usage, see :doc:`usage`.
 All classes and functions can be found in :doc:`api`.
@@ -27,6 +29,7 @@ For in-depth module descriptions, check out :doc:`modules`.
    modules
    examples
    api
+   methods
 
 .. note::
    All operations are verified against Pytorch, except for Conv2D gradients 

@@ -1,6 +1,9 @@
+.. _modules:
 
 Modules
 ============
+
+.. _tensor:
 
 tensor
 ------
@@ -59,13 +62,13 @@ The following illustrates their difference:
     y = x**2 + x + 1
     topo, weights = y.create_graph()
 
-In the above, 3 operations are performed on a created ``Tensor`` x, thus, ``topo`` is a list with the following 
+In the above, 3 operations are performed on a created Tensor ``x``, thus, ``topo`` is a list with the following 
 elements in this order:
 
-    #. x
-    #. x**2
-    #. x**2 + x
-    #. y=x**2 + x + 1
+    #. ``x``
+    #. ``x**2``
+    #. ``x**2 + x``
+    #. ``y=x**2 + x + 1``
 
 ``weights`` however only contains the ``x`` Tensor, as in producing ``y``, 
 only one Tensor had learnable weights, with all intermediary Tensors not contributing uniquely to ``y``.
@@ -75,9 +78,9 @@ Backwards propagation
 
 Having a set of ``weights`` for a Tensor allows performing backpropagation on that Tensor, 
 updating only those Tensors whose values directly contribute, ignoring the rest. 
-This is how `backward()` is implemented in the library.
+This is how ``backward()`` is implemented in the library.
 
-Backpropagation can be directly performed on a Tensor at any time using the `.backward()` method.
+Backpropagation can be directly performed on a Tensor at any time using the ``.backward()`` method.
 This populates the gradients of all contibuting weights to that Tensor.
 
 .. code-block:: Python
@@ -121,15 +124,13 @@ The following shows a simple example of performing gradient descent on the Tenso
     # -> 1.4336... 0.0045...
 
 
-For performing backprop automatically with more complex functions, refer to the ``optims`` module.
-Vectorized backprop with batched data is also supported, however requires creating a subclass of ``Module``. 
+For performing backprop automatically with more complex functions, use the :ref:`optims` module.
+Vectorized backprop with batched data is also supported, however to not modify the underlying model 
+whilst performing vectorized forward and backwards passes will require creating a subclass of ``Module``. 
 
+For all Tensor methods see: :ref:`Tensor Methods <tensormethods>`
 
-Class methods
-************************
-
-.. autoclass:: autograd.cpu.tensor::Tensor
-    :members: __init__, create_graph, backward
+.. _basics:
 
 basics, activations, and losses
 -------------------------------
@@ -181,25 +182,18 @@ Backpropagation can now be done using this Class, no different than with any oth
     x.grad
     # -> array([1., 0., 0., 1.])
 
-Class methods
-************************
+For all methods in basics, activations, and losses, see: :ref:`basics, activations, losses <basics_methods>`.
 
-.. automodule:: autograd.cpu.basics
-   :members:
-
-.. automodule:: autograd.cpu.activations
-   :members:
-
-.. automodule:: autograd.cpu.losses
-   :members:
+.. _optims:
 
 optims
 -------
 
-Classes for gradient descent such as SGD, SGD with Momentum, RMSProp, and Adam have been defined in the ``optims`` module.
+Classes for gradient descent such as SGD, SGD with Momentum, RMSProp, and Adam are defined here.
 Optimizers are designed to work with the ``weights`` of a Tensor (called a ``model``), each having a ``.zero_grad`` method 
 for resetting Tensor gradients, a ``.step`` method for updating model weights given a loss function, and a ``.step_single`` method
-for updating model weights progressively in a memory-sensitive manner when model weights are large. This method is further explained under ``Module``.
+for updating model weights progressively in a memory-sensitive manner when model weights are large. 
+This method is further explained under :ref:`module`.
 
 Basic usage is the same across all optimizers; 
 initialize the optimizer with the model weights along with optimizer-specific parameters; 
@@ -227,14 +221,15 @@ and step with the optimizer, feeding in the loss function.
     print(x.value, y.value, loss.value)
     # -> 0.7100436 1.50433688 1.88085134e-05
 
-.. automodule:: autograd.cpu.optims
-   :members:
+For all available options, see: :ref:`optims options <optimsmethods>`.
+
+.. _module:
 
 module
 -------
 
 The ``Module`` class gives the ability to perform batched forward and backward passes on the model without mutating the model. 
-Functions defined as classes representing models can also easily use optimizers as defined in ``optims``.
+Functions defined as classes representing models can also easily use optimizers as defined in :ref:`optims`.
 
 Below shows how to convert a class-defined function into one subclassing ``Module``.
 
@@ -262,7 +257,8 @@ The following have to now take place:
     #. Subclassing (``autograd.cpu.module.Module``)
     #. A line ``super().__init__``, passing in the expected model forward-pass inputs, with:
         * each input that is of type ``Tensor`` has to have set ``leaf=True``
-    #. Any calling of the model that has ``Tensor`` inputs has to have ``leaf=True``
+    #. Any calling of the model that has ``Tensor`` inputs requires the tensor to have ``leaf=True``
+    #. Any calling of the model requires keyword inputs.
 
 .. code-block:: Python
 
@@ -325,7 +321,7 @@ This process is done automatically when subclassing ``Module``, with the batched
 available under ``model.copy``.
 
 
-Using ``Module`` makes it easy to perform gradient descent with ``optim``:
+Using ``Module`` makes it easy to perform gradient descent with :ref:`optims`:
 
     * Model weights are found in ``model.weights``. These weights are given to the optimizer for updating.
     * Batched model data which is stored in the model after calling on batched data is reset with ``model.model_reset()``. If this is not reset, the previous model gradients will accumulate. This will also stop the model from training if different batch sizes are given from one training epoch from the next.
@@ -354,8 +350,6 @@ Using ``Module`` makes it easy to perform gradient descent with ``optim``:
         optim.step(loss)
 
 The model's weights will be updated here according to losses averaged over the batch, but without any change to their originally defined shape.
-For more training examples, see ```examples``` in the repo.
+For more training examples, see :ref:`examples`.
 
-.. automodule:: autograd.cpu.module
-   :members:
-
+For class methods, see :ref:`Module <module_methods>`

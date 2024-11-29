@@ -1,19 +1,21 @@
 
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from autograd.cpu.losses import CCELoss
-from autograd.cpu.optims import SGD
-from autograd.cpu.tensor import Tensor
-
-from examples.dnn.utils import accuracy_fn, save_model
-from architectures.dnn import DNN
+import gc
+import os
+import sys
 
 import numpy as np
 import tqdm
-import gc
-import sys, os
+
+from architectures.dnn import DNN
+from autograd.cpu.losses import CCELoss
+from autograd.cpu.optims import SGD
+from autograd.cpu.tensor import Tensor
+from examples.dnn.utils import accuracy_fn, save_model
 
 
 def main():

@@ -1,19 +1,22 @@
 
 # PYTHONPATH=. python ....py
 
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+import gc
+
+import numpy as np
+import tqdm
 
 from architectures.transformer import Transformer
 from autograd.cpu.losses import CCELoss
 from autograd.cpu.optims import Adam
 from autograd.cpu.tensor import Tensor
-from examples.transformer.utils import accuracy_fn, infer_one, save_model, PrepareDataset
-
-import numpy as np
-import tqdm
-import gc
+from examples.transformer.utils import (PrepareDataset, accuracy_fn, infer_one,
+                                        save_model)
 
 
 def main():

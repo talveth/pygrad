@@ -1,4 +1,6 @@
 
+.. _API:
+
 API
 ========
 
@@ -6,8 +8,7 @@ API
 autograd.cpu
 -------------
 
-``autograd.cpu`` holds all the base modules for the differentiation engine, optimized for runtime on a CPU.
-Currently this is the sole set of modules to be used.
+``autograd.cpu`` holds all the base modules for the differentiation engine, for CPU-based runtimes.
 
 .. autosummary::
    :toctree: generated
@@ -32,6 +33,7 @@ examples
 -------------
 
 ``examples`` shows training pipelines for each of the architectures defined in ``architectures``.
+Running these will require installing the library with ``.[examples]``.
 
 .. autosummary::
    :toctree: generated

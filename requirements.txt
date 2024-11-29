@@ -1,4 +1,0 @@
-#Python >=3.10
-numba>=0.60.0
-numpy>=2.0.2
-opt_einsum>=3.4.0

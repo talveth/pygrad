@@ -1,22 +1,23 @@
 
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from autograd.cpu.tensor import Tensor
-from autograd.cpu.constants import PRECISION
-from autograd.cpu.optims import SGD, RMSProp, Adam
-import autograd
-import numpy as np
-import torch
-import numba as nb
-
-from examples.transformer.utils import PrepareDataset
-from transformer.transformers import Transformer_torch, Embedding
-from architectures.transformer import Transformer
 import copy
 
+import numba as nb
+import numpy as np
+import torch
+from transformer.transformers import Embedding, Transformer_torch
+
+import autograd
+from architectures.transformer import Transformer
+from autograd.cpu.constants import PRECISION
+from autograd.cpu.optims import SGD, Adam, RMSProp
+from autograd.cpu.tensor import Tensor
+from examples.transformer.utils import PrepareDataset
 
 if PRECISION in [np.float32]:
     tol = 1e-5

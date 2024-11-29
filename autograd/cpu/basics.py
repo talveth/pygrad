@@ -1,9 +1,17 @@
 
+"""
+Module storing class-defined layers.
+"""
+
 from __future__ import annotations
-import numpy as np
-from .tensor import Tensor
-from .constants import PRECISION
+
 from typing import Union
+
+import numpy as np
+
+from .constants import PRECISION
+from .tensor import Tensor
+
 
 class Dropout:
     """
@@ -74,13 +82,12 @@ class Linear:
     """
     def __init__(self, i_dim:int, o_dim:int, bias:bool=True, label:Union[None,int,str]="Linear", dtype=PRECISION) -> None:
         """
-        Initializes a Dense Linear Layer. Weights are initialized via Kaiming Uniform.
+        Initializes a Dense Linear Layer with Kaiming Uniform initialization.
 
         A Dense linear layer is Wx + B.
 
         W is initialized as a Tensor of shape (1, i_dim, o_dim); with the leading dimension indicating the batch dimension.
-        if bias is True: 
-            B is initialized as a Tensor of shape (1, 1, o_dim); the leading dimension indicating the batch dimension.
+        if bias is True: B is initialized as a Tensor of shape (1, 1, o_dim); the leading dimension indicating the batch dimension.
 
         :param i_dim: The input data dimension to the layer.
         :type i_dim: int
@@ -92,7 +99,6 @@ class Linear:
         :type label: None, int, str (defaults to "Linear")
         :param dtype: The data type of the weights and gradients. Defaults to np.float64.
         :type dtype: The data types allowable by the Tensor class.
-
         """
         assert isinstance(i_dim, int), "i_dim must be an integer"
         assert i_dim > 0,              "i_dim must be positive"
@@ -198,6 +204,7 @@ class Flatten:
 class Conv2D:
     """
     Performs Conv2D from an input dimension i_dim to an output dimension o_dim using a kernel (kH, kW).
+
     Kernels are initialized using Kaiming Uniform initialization.
     Only single strides are performed. No output padding is performed.
     """
@@ -206,10 +213,14 @@ class Conv2D:
         Initialization for the Conv2D class.
 
         Conv2D is a set of kernels, that calls on an input data x: Cx + B.
+        
         C is the convolution, B is the bias.
+        
         C is of shape (1, o_dim, i_dim, kH, kW), the leading dimension being the batch dimension.
-        if bias is True:
+        
+        If bias is True:
             B is of shape (1, o_dim, 1, 1)
+        
         Weights are initialized via Kaiming Uniform Initialization.
 
         :param o_dim: The output channel dimension of the convolution. This indicates the number of kernels to apply to the input.

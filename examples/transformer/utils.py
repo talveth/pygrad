@@ -1,10 +1,12 @@
 
-import numpy as np
-from autograd.cpu.tensor import Tensor
-from typing import Union
-import dill
-import os
 import gc
+import os
+from typing import Union
+
+import dill
+import numpy as np
+
+from autograd.cpu.tensor import Tensor
 
 
 class PrepareDataset:

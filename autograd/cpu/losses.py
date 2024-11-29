@@ -1,6 +1,11 @@
 
-from .tensor import Tensor
+"""
+Module storing class-defined loss functions.
+"""
+
 import numpy as np
+
+from .tensor import Tensor
 
 
 class BCELoss:

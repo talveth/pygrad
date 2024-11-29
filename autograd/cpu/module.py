@@ -1,14 +1,21 @@
 
+"""
+Module storing Module.
+"""
+
 import copy
-from .tensor import Tensor
-import numpy as np
 from abc import ABC, abstractmethod
+
+import numpy as np
+
+from .tensor import Tensor
 
 
 class Module(ABC):
     """
-    Module Class. Allows for performing batched forward and backwards 
-    passes on a model without modifying the model directly.
+    Module Class.
+
+    Allows for performing batched forward and backwards passes on a model without modifying the model directly.
     The subclassed models must perform any required **kwargs type checking.
     """
     @abstractmethod
@@ -27,8 +34,9 @@ class Module(ABC):
         Returns the forward pass output of the model on a batched input.
 
         Further:
-        * Creates a batch-friendly version of the original model to do backprop with.
-        * Creates topological and weight graphs of the batched model, storing them in self.model_copy.
+            * Creates a batch-friendly version of the original model to do backprop with.
+            * Creates topological and weight graphs of the batched model, storing them in self.model_copy.
+
         """
         if getattr(self, 'model_copy', None) is None:
             self.model_reset()

@@ -1,22 +1,29 @@
 
-from .tensor import Tensor
-import numpy as np
+"""
+Module storing (gradient descent) optimization methods.
+"""
+
 import copy
+
+import numpy as np
+
+from .tensor import Tensor
 
 
 class SGD:
     """
     Vanilla Gradient Descent.
+    
     """
     def __init__(self, model_parameters:list, lr:float=1e-5):
         """
         Initializes the SGD optimizer.
 
-        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph.
-                                 This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
+        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
         :type model_parameters: list
         :param lr: the learning rate for SGD
         :type lr: float. Defaults to 1e-5.
+
         """
         assert isinstance(model_parameters, list), "model_parameters must be a list of Tensors"
         assert len(model_parameters) > 0, "The provided model_parameters contains no Tensors"
@@ -27,6 +34,7 @@ class SGD:
     def zero_grad(self):
         """
         Sets the gradient of each Tensor in model_parameters to 0.
+
         """
         for param in self.model_parameters:
             param.reset_grad()
@@ -34,11 +42,12 @@ class SGD:
     def step(self, loss:Tensor)->None:
         """
         Performs a single step of gradient descent on model_parameters according to the loss function's gradients.
+        
         Gradients are both averaged across a batch, with Tensor values modified accordingly.
         
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
+
         """
         assert isinstance(loss, Tensor), "the loss must be a Tensor"
         for i, param in enumerate(self.model_parameters):
@@ -49,22 +58,19 @@ class SGD:
 
     def step_single(self, loss:Tensor, batch_size, modify:bool=False)->None:
         """
-        This function performing gradient descent on arbitrary batch sizes
-        by allowing for any number of gradient updates before values are updated.
+        This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.
 
         The single step of gradient descent is split into two components.
-        1. Model parameter gradients are adjusted according to the average of the loss gradients.
-           This is set when modify=False.
-        2. Model parameter values are updated.
-           This is set when modify=True
+            1. Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.
+            2. Model parameter values are updated. This is set when modify=True
 
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
         :param batch_size: The final batch_size to average gradients over.
         :type batch_size: int
         :param modify: Whether or not to modify the model values.
         :type modify: bool, defaults to False.
+
         """
         assert isinstance(loss, Tensor), "loss must be a Tensor"
         assert isinstance(batch_size, int), "batch_size must be an int"
@@ -85,13 +91,13 @@ class SGD_Momentum:
         """
         Initializes the SGD with momentum optimizer.
 
-        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph.
-                                 This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
+        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
         :type model_parameters: list
         :param beta: the beta momentum parameter to use
         :type beta: float. Defaults to 0.9.
         :param lr: the learning rate for SGD
         :type lr: float. Defaults to 1e-5.
+
         """
         assert isinstance(model_parameters, list), "model_parameters must be a list of Tensors"
         assert len(model_parameters) > 0, "The provided model_parameters contains no Tensors"
@@ -116,11 +122,12 @@ class SGD_Momentum:
     def step(self, loss:Tensor):
         """
         Performs a single step of gradient descent with momentum on model_parameters according to the loss function's gradients.
+        
         Gradients are both averaged across a batch, with Tensor values modified accordingly.
         
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
+
         """
         assert isinstance(loss, Tensor), "loss must be a Tensor"
         for i, param in enumerate(self.model_parameters):
@@ -132,17 +139,13 @@ class SGD_Momentum:
 
     def step_single(self, loss, batch_size, modify:bool=False):
         """
-        This function performing gradient descent on arbitrary batch sizes
-        by allowing for any number of gradient updates before values are updated.
+        This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.
 
         The single step of gradient descent is split into two components.
-        1. Model parameter gradients are adjusted according to the average of the loss gradients.
-           This is set when modify=False.
-        2. Model parameter values are updated.
-           This is set when modify=True
+            1. Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.
+            2. Model parameter values are updated. This is set when modify=True
 
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
         :param batch_size: The final batch_size to average gradients over.
         :type batch_size: int
@@ -167,13 +170,13 @@ class RMSProp:
         """
         Initializes the RMS Prop.
 
-        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph.
-                                 This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
+        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
         :type model_parameters: list
         :param beta: the beta parameter to use in RMSProp.
         :type beta: float. Defaults to 0.9.
         :param lr: the learning rate.
         :type lr: float. Defaults to 1e-5.
+
         """
         assert isinstance(model_parameters, list), "model_parameters must be a list of Tensors"
         assert len(model_parameters) > 0, "The provided model_parameters contains no Tensors"
@@ -199,10 +202,10 @@ class RMSProp:
     def step(self, loss:Tensor):
         """
         Performs a single step of RMSProp on model_parameters according to the loss function's gradients.
+        
         Gradients are both averaged across a batch, with Tensor values modified accordingly.
         
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
         """
         assert isinstance(loss, Tensor), "loss must be a Tensor"
@@ -213,17 +216,13 @@ class RMSProp:
 
     def step_single(self, loss, batch_size, modify:bool=False):
         """
-        This function performing gradient descent on arbitrary batch sizes
-        by allowing for any number of gradient updates before values are updated.
+        This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.
 
         The single step of gradient descent is split into two components.
-        1. Model parameter gradients are adjusted according to the average of the loss gradients.
-           This is set when modify=False.
-        2. Model parameter values are updated.
-           This is set when modify=True
+            1. Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.
+            2. Model parameter values are updated. This is set when modify=True
 
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
         :param batch_size: The final batch_size to average gradients over.
         :type batch_size: int
@@ -248,8 +247,7 @@ class Adam:
         """
         Initializes Adam.
 
-        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph.
-                                 This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
+        :param model_parameters: This is a list of Tensors specifying the pre-order traversal of a Tensor's computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params
         :type model_parameters: list
         :param beta1: the beta1 parameter to use
         :type beta1: float. Defaults to 0.9.
@@ -259,6 +257,7 @@ class Adam:
         :type eps: float. Defaults to 1e-8.
         :param lr: the learning rate.
         :type lr: float. Defaults to 1e-5.
+
         """
         assert isinstance(model_parameters, list), "model_parameters must be a list of Tensors"
         assert len(model_parameters) > 0, "The provided model_parameters contains no Tensors"
@@ -299,11 +298,12 @@ class Adam:
     def step(self, loss:Tensor):
         """
         Performs a single step of Adam on model_parameters according to the loss function's gradients.
+        
         Gradients are both averaged across a batch, with Tensor values modified accordingly.
         
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
+
         """
         assert isinstance(loss, Tensor), "loss must be a Tensor"
         self.iter_num += 1
@@ -317,22 +317,21 @@ class Adam:
 
     def step_single(self, loss, batch_size, modify:bool=False):
         """
-        This function performing gradient descent on arbitrary batch sizes
-        by allowing for any number of gradient updates before values are updated.
+        Perform gradient descent on a loss, with control over value modification.
+
+        This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.
 
         The single step of gradient descent is split into two components.
-        1. Model parameter gradients are adjusted according to the average of the loss gradients.
-           This is set when modify=False.
-        2. Model parameter values are updated.
-           This is set when modify=True
+            1. Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.
+            2. Model parameter values are updated. This is set when modify=True
 
-        :param loss: A Tensor specifying a loss function.
-                     This loss needs to have taken the output from the same model which provided self.model_parameters
+        :param loss: A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters
         :type loss: Tensor
         :param batch_size: The final batch_size to average gradients over.
         :type batch_size: int
         :param modify: Whether or not to modify the model values.
         :type modify: bool, defaults to False.
+
         """
         assert isinstance(loss, Tensor), "loss must be a Tensor"
         assert isinstance(batch_size, int), "batch_size must be an int"

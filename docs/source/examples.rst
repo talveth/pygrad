@@ -1,10 +1,12 @@
 
+.. _examples:
+
 Examples
 =========
-The below show example usage of the library for performing gradient descent on a variety of objects.
+The below shows reproducible training scripts performing gradient descent on a variety of functions.
 
 
-Simple Gradient Descent:
+Manual Gradient Descent:
 ------------------------
 
 .. code-block:: Python
@@ -23,7 +25,7 @@ Simple Gradient Descent:
     # -> 1.4336... 0.0045...
 
 
-Gradient Descent with the ``optim`` module:
+Gradient Descent with ``optim``:
 -------------------------------------------
 
 .. code-block:: Python
@@ -57,7 +59,8 @@ Full Deep Neural Network:
     from autograd.cpu.module import Module
     from autograd.cpu.losses import CCELoss
     from autograd.cpu.optims import SGD
-    from autograd.cpu.basics import ReLU, Linear, Dropout, Flatten
+    from autograd.cpu.basics import Linear, Dropout, Flatten
+    from autograd.cpu.activations import ReLU
 
     PRECISION = np.float64
     class DNN(Module):

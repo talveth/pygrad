@@ -1,11 +1,21 @@
 
+"""
+Module storing the main Tensor class and related methods.
+"""
+
 from __future__ import annotations
+import warnings
+
+import copy
 from typing import Union
-from .constants import PRECISION
 
 import numpy as np
+
+from .constants import PRECISION
 from .numba_ops import softmax_grad
-import copy
+
+
+warnings.simplefilter("once", category=UserWarning)
 
 
 class Tensor:
@@ -488,7 +498,7 @@ class Tensor:
 
             elif len(self.shape) == 3:
                 if self.dtype in [np.float16, np.float128]:
-                    raise f"Softmax grad calculations don't support {self.dtype}, casting to np.float64 for calculations."
+                    warnings.warn(f"Softmax grad calculations don't support {self.dtype}, casting to np.float64 for calculations.", category=UserWarning)
                     self.grad        += softmax_grad(new_val.astype(np.float64), new.grad.astype(np.float64)).astype(self.dtype)
                 else:
                     self.grad        += softmax_grad(new_val, new.grad).astype(self.dtype)
@@ -530,7 +540,7 @@ class Tensor:
 
             elif len(self.shape) == 3:
                 if self.dtype in [np.float16, np.float128]:
-                    raise f"Softmax grad calculations don't support {self.dtype}, casting to np.float64 for calculations."
+                    warnings.warn(f"Softmax grad calculations don't support {self.dtype}, casting to np.float64 for calculations.", category=UserWarning)
                     new_val              = new_val_exp
                     self.grad        += softmax_grad(new_val.astype(np.float64), new.grad.astype(np.float64)).astype(self.dtype)
                 else:

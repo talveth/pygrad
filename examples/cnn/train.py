@@ -1,18 +1,20 @@
 
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from autograd.cpu.losses import CCELoss
-from autograd.cpu.optims import RMSProp
-from autograd.cpu.tensor import Tensor
-
-from examples.cnn.utils import accuracy_fn, save_model
-from architectures.cnn import CNN
+import gc
 
 import numpy as np
 import tqdm
-import gc
+
+from architectures.cnn import CNN
+from autograd.cpu.losses import CCELoss
+from autograd.cpu.optims import RMSProp
+from autograd.cpu.tensor import Tensor
+from examples.cnn.utils import accuracy_fn, save_model
+
 
 def main():
 

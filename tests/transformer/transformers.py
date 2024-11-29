@@ -1,15 +1,17 @@
 
+import os
+import sys
+
+import numpy as np
 import torch
 from torch import nn
-import numpy as np
 
-import os, sys
 sys.path.append(os.path.abspath(os.path.dirname('./../../')))
-from autograd.cpu.tensor import Tensor
-from autograd.cpu.basics import Linear, AddNorm, Dropout
 from autograd.cpu.activations import ReLU
-from autograd.cpu.module import Module
+from autograd.cpu.basics import AddNorm, Dropout, Linear
 from autograd.cpu.constants import PRECISION
+from autograd.cpu.module import Module
+from autograd.cpu.tensor import Tensor
 
 dtype_mapping = {
     np.float32: torch.float32,

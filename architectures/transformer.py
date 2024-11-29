@@ -1,11 +1,13 @@
 
 
 import numpy as np
-from autograd.cpu.tensor import Tensor
-from autograd.cpu.module import Module
-from autograd.cpu.basics import Linear, Dropout, AddNorm
+
 from autograd.cpu.activations import ReLU
+from autograd.cpu.basics import AddNorm, Dropout, Linear
 from autograd.cpu.constants import PRECISION
+from autograd.cpu.module import Module
+from autograd.cpu.tensor import Tensor
+
 
 class Embedding:
     def __init__(self, d_vocab, d_model, dtype=PRECISION) -> None:
