@@ -1,5 +1,5 @@
 pygrad.optims
-===================
+=============
 
 .. automodule:: pygrad.optims
 

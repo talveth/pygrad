@@ -2,11 +2,11 @@
 
 import numpy as np
 
-from autograd.cpu.activations import ReLU
-from autograd.cpu.basics import AddNorm, Dropout, Linear
-from autograd.cpu.constants import PRECISION
-from autograd.cpu.module import Module
-from autograd.cpu.tensor import Tensor
+from pygrad.activations import ReLU
+from pygrad.basics import AddNorm, Dropout, Linear
+from pygrad.constants import PRECISION
+from pygrad.module import Module
+from pygrad.tensor import Tensor
 
 
 class Embedding:

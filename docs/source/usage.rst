@@ -14,19 +14,19 @@ To use pygrad, clone `the repository <https://github.com/baubels/pygrad>`_ and i
    $ pip install .[examples]     # normal + examples
    $ pip install .[dev]          # normal + dev
 
-This will install pygrad with the Python importable name ``autograd``.
+This will install pygrad with the Python importable name ``pygrad``.
 
 
 Basic Usage
 ------------
 
-All library functionality can be found in ``autograd``. 
+All library functionality can be found in ``pygrad``. 
 The main differentiable object in the library is the ``Tensor`` class.
 The below shows performing backprop on a function ``y``.
 
 .. code-block:: Python
 
-   from autograd.cpu.tensor import Tensor
+   from pygrad.tensor import Tensor
    x = Tensor(1)
    y = x**2 + 1
    y.backward()
@@ -35,14 +35,14 @@ The below shows performing backprop on a function ``y``.
 
 For more details, see :ref:`tensor`.
 
-*Common deep learning layers* can be found in ``autograd.cpu.basics`` (:ref:`basics`). 
+*Common deep learning layers* can be found in ``pygrad.basics`` (:ref:`basics`). 
 The below finds the gradient of a Dense linear layer.
 
 .. code-block:: Python
 
     import numpy as np
-    from autograd.cpu.tensor import Tensor
-    from autograd.cpu.basics import Linear
+    from pygrad.tensor import Tensor
+    from pygrad.basics import Linear
     x  = Tensor(np.ones((1,1,2)))
     l1 = Linear(2,1)
     y  = l1(x)
@@ -51,13 +51,13 @@ The below finds the gradient of a Dense linear layer.
     # -> (1, 1, 1) (1, 1, 1) (1, 2, 1) (1, 1, 1) (1, 1, 2)
 
 
-*Gradient Descent schemes* can be found in ``autograd.cpu.optims`` (:ref:`optims`).
+*Gradient Descent schemes* can be found in ``pygrad.optims`` (:ref:`optims`).
 The below shows an example of minimizing the L2 loss between ``y`` and ``1.5`` using the ``SGD`` class.
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
-    from autograd.cpu.optims import SGD
+    from pygrad.tensor import Tensor
+    from pygrad.optims import SGD
 
     x     = Tensor([1])
     y     = x**2 + 1

@@ -1,5 +1,5 @@
 pygrad.activations
-========================
+==================
 
 .. automodule:: pygrad.activations
 

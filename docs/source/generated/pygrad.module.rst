@@ -1,5 +1,5 @@
 pygrad.module
-===================
+=============
 
 .. automodule:: pygrad.module
 

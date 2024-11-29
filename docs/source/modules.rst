@@ -109,7 +109,7 @@ The following shows a simple example of performing gradient descent on the Tenso
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
+    from pygrad.tensor import Tensor
 
     n_iters = 1000
     stepsize= 0.01
@@ -150,7 +150,7 @@ For example, defining Dropout is done as follows:
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
+    from pygrad.tensor import Tensor
     import numpy as np
 
     class Dropout:
@@ -203,8 +203,8 @@ and step with the optimizer, feeding in the loss function.
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
-    from autograd.cpu.optims import SGD
+    from pygrad.tensor import Tensor
+    from pygrad.optims import SGD
 
     x     = Tensor([1])
     y     = x**2 + 1
@@ -254,7 +254,7 @@ Below shows how to convert a class-defined function into one subclassing ``Modul
 
 
 The following have to now take place:
-    #. Subclassing (``autograd.cpu.module.Module``)
+    #. Subclassing (``pygrad.module.Module``)
     #. A line ``super().__init__``, passing in the expected model forward-pass inputs, with:
         * each input that is of type ``Tensor`` has to have set ``leaf=True``
     #. Any calling of the model that has ``Tensor`` inputs requires the tensor to have ``leaf=True``
@@ -328,8 +328,8 @@ Using ``Module`` makes it easy to perform gradient descent with :ref:`optims`:
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
-    from autograd.cpu.optims import SGD
+    from pygrad.tensor import Tensor
+    from pygrad.optims import SGD
     import numpy as np
 
     model       = DNN2()                        # defined previously, subclassing Module

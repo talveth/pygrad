@@ -4,7 +4,7 @@
 Class methods
 ************************
 
-.. automodule:: autograd.cpu.tensor
+.. automodule:: pygrad.tensor
     :members:
     :special-members:
 
@@ -12,31 +12,31 @@ Class methods
 
 Basic layers:
 
-.. automodule:: autograd.cpu.basics
+.. automodule:: pygrad.basics
    :members:
    :special-members:
 
 Activation functions:
 
-.. automodule:: autograd.cpu.activations
+.. automodule:: pygrad.activations
    :members:
    :special-members:
 
 Losses:
 
-.. automodule:: autograd.cpu.losses
+.. automodule:: pygrad.losses
    :members:
    :special-members:
 
 .. _optimsmethods:
 
-.. automodule:: autograd.cpu.optims
+.. automodule:: pygrad.optims
    :members:
    :special-members:
 
 .. _module_methods:
 
-.. automodule:: autograd.cpu.module
+.. automodule:: pygrad.module
    :members:
    :special-members:
 

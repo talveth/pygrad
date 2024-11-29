@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-base_directory = 'autograd/'
+base_directory = 'pygrad/'
 
 # Get all subdirectories in the base directory
 for root, dirs, files in os.walk(base_directory):

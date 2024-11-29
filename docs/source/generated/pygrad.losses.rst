@@ -1,5 +1,5 @@
 pygrad.losses
-===================
+=============
 
 .. automodule:: pygrad.losses
 

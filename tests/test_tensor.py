@@ -9,8 +9,8 @@ import numba as nb
 import numpy as np
 import torch
 
-from autograd.cpu.constants import PRECISION
-from autograd.cpu.tensor import Tensor
+from pygrad.constants import PRECISION
+from pygrad.tensor import Tensor
 
 if PRECISION in [np.float16, np.float32]:
     tol = 1e-5

@@ -10,9 +10,9 @@ import numba as nb
 import numpy as np
 import torch
 
-import autograd
-from autograd.cpu.constants import PRECISION
-from autograd.cpu.tensor import Tensor
+import pygrad
+from pygrad.constants import PRECISION
+from pygrad.tensor import Tensor
 
 if PRECISION in [np.float16, np.float32]:
     tol = 1e-5
@@ -125,7 +125,7 @@ class TestTensorExtras(unittest.TestCase):
         test_shapes         = [(100,50,50), (1,1,5), (3,5,5), (1,2,2,5), (5,1,10,15)]
         
         for shape in test_shapes:
-            nb.njit(fastmath=True,parallel=False,cache=True)(autograd.cpu.numba_ops.softmax_grad.py_func)
+            nb.njit(fastmath=True,parallel=False,cache=True)(pygrad.numba_ops.softmax_grad.py_func)
             a_val               = np.random.uniform(0, 1, shape)
 
             # custom

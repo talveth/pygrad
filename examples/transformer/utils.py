@@ -6,7 +6,7 @@ from typing import Union
 import dill
 import numpy as np
 
-from autograd.cpu.tensor import Tensor
+from pygrad.tensor import Tensor
 
 
 class PrepareDataset:

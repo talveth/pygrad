@@ -6,7 +6,7 @@
 pygrad documentation
 =========================
 
-**pygrad** is a lightweight automatic differentiation (autograd) engine written entirely in Python, 
+**pygrad** is a lightweight automatic differentiation (pygrad) engine written entirely in Python, 
 relying only on NumPy and Numba, verified against Pytorch*, and less than 300 KBs in size.
 It automatically tracks derivatives, being able to both natively compute derivatives and apply gradient descent to any produced function. 
 Any np.floating data type is supported, thus allowing for 16-bit to 128-bit values and gradients if required. 

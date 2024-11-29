@@ -11,7 +11,7 @@ Manual Gradient Descent:
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
+    from pygrad.tensor import Tensor
     n_iters = 1000
     stepsize= 0.01
     x       = Tensor(1)
@@ -30,8 +30,8 @@ Gradient Descent with ``optim``:
 
 .. code-block:: Python
 
-    from autograd.cpu.tensor import Tensor
-    from autograd.cpu.optims import SGD
+    from pygrad.tensor import Tensor
+    from pygrad.optims import SGD
 
     x     = Tensor([1])
     y     = x**2 + 1
@@ -55,12 +55,12 @@ Full Deep Neural Network:
 
     import numpy as np
     import tqdm
-    from autograd.cpu.tensor import Tensor
-    from autograd.cpu.module import Module
-    from autograd.cpu.losses import CCELoss
-    from autograd.cpu.optims import SGD
-    from autograd.cpu.basics import Linear, Dropout, Flatten
-    from autograd.cpu.activations import ReLU
+    from pygrad.tensor import Tensor
+    from pygrad.module import Module
+    from pygrad.losses import CCELoss
+    from pygrad.optims import SGD
+    from pygrad.basics import Linear, Dropout, Flatten
+    from pygrad.activations import ReLU
 
     PRECISION = np.float64
     class DNN(Module):

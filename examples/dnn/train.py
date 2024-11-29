@@ -12,9 +12,9 @@ import numpy as np
 import tqdm
 
 from architectures.dnn import DNN
-from autograd.cpu.losses import CCELoss
-from autograd.cpu.optims import SGD
-from autograd.cpu.tensor import Tensor
+from pygrad.losses import CCELoss
+from pygrad.optims import SGD
+from pygrad.tensor import Tensor
 from examples.dnn.utils import accuracy_fn, save_model
 
 

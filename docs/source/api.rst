@@ -5,16 +5,16 @@ API
 ========
 
 
-autograd.cpu
+pygrad
 -------------
 
-``autograd.cpu`` holds all the base modules for the differentiation engine, for CPU-based runtimes.
+``pygrad`` holds all the base modules for the differentiation engine, for CPU-based runtimes.
 
 .. autosummary::
    :toctree: generated
    :recursive:
    
-   autograd.cpu
+   pygrad
 
 
 architectures

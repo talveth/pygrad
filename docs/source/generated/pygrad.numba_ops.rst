@@ -1,5 +1,5 @@
 pygrad.numba\_ops
-=======================
+=================
 
 .. automodule:: pygrad.numba_ops
 

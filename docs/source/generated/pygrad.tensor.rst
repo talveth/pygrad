@@ -1,5 +1,5 @@
 pygrad.tensor
-===================
+=============
 
 .. automodule:: pygrad.tensor
 

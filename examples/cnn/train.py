@@ -10,9 +10,9 @@ import numpy as np
 import tqdm
 
 from architectures.cnn import CNN
-from autograd.cpu.losses import CCELoss
-from autograd.cpu.optims import RMSProp
-from autograd.cpu.tensor import Tensor
+from pygrad.losses import CCELoss
+from pygrad.optims import RMSProp
+from pygrad.tensor import Tensor
 from examples.cnn.utils import accuracy_fn, save_model
 
 

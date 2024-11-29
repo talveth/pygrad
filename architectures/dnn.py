@@ -1,10 +1,10 @@
 
 import numpy as np
 
-from autograd.cpu.activations import ReLU
-from autograd.cpu.basics import Dropout, Flatten, Linear
-from autograd.cpu.module import Module
-from autograd.cpu.tensor import Tensor
+from pygrad.activations import ReLU
+from pygrad.basics import Dropout, Flatten, Linear
+from pygrad.module import Module
+from pygrad.tensor import Tensor
 
 PRECISION = np.float64
 class DNN(Module):

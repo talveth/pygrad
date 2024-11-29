@@ -12,11 +12,11 @@ import numpy as np
 import torch
 from transformer.transformers import Embedding, Transformer_torch
 
-import autograd
+import pygrad
 from architectures.transformer import Transformer
-from autograd.cpu.constants import PRECISION
-from autograd.cpu.optims import SGD, Adam, RMSProp
-from autograd.cpu.tensor import Tensor
+from pygrad.constants import PRECISION
+from pygrad.optims import SGD, Adam, RMSProp
+from pygrad.tensor import Tensor
 from examples.transformer.utils import PrepareDataset
 
 if PRECISION in [np.float32]:

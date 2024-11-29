@@ -12,9 +12,9 @@ import numpy as np
 import tqdm
 
 from architectures.transformer import Transformer
-from autograd.cpu.losses import CCELoss
-from autograd.cpu.optims import Adam
-from autograd.cpu.tensor import Tensor
+from pygrad.losses import CCELoss
+from pygrad.optims import Adam
+from pygrad.tensor import Tensor
 from examples.transformer.utils import (PrepareDataset, accuracy_fn, infer_one,
                                         save_model)
 
