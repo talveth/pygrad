@@ -3,7 +3,8 @@
 
 Documentation: https://baubels.github.io/pygrad/.
 
-This is a lightweight automatic differentiation engine based on NumPy and Numba. Included is a differentiable Tensor class, layers such as Dropout/Linear/Attention, loss functions such as BCE/CCE, optimizers such as SGD/RMSProp/Adam, and a DNN/CNN/Transformer architecture. 
+This is a lightweight (<300kB) automatic differentiation engine based on NumPy, Numba, and opt_einsum.
+Included is a differentiable Tensor class, layers such as Dropout/Linear/Attention, loss functions such as BCE/CCE, optimizers such as SGD/RMSProp/Adam, and an example DNN/CNN/Transformer architecture. This library is a good alternative if you want to do backpropagation on simple and small functions or networks, without much overhead.
 
 The main component is the `Tensor` class supporting many math operations. `Tensor`s have `.value` and `.grad` attributes, gradients being populated by calling `.backward()` on either self or any of its children. They can be used standalone, or for constructing more complex architectures such as a vanilla Transformer.
 
@@ -19,6 +20,28 @@ x = Tensor(1)
 (((x**3 + x**2 + x + 1) - 1)**2).backward()
 x.grad  # 36.
 ```
+
+Since `Tensor` store their value in `.value` and their gradient in `.grad`, it's easy to perform gradient descent.
+
+```python
+for _ in range(100):
+    (((x**3 + x**2 + x + 1) - 1)**2).backward()     # gradients are automatically reset when called
+    x.value = x.value - 0.01*x.grad
+```
+
+Tensors can also be operated on with broadcast-friendly NumPy arrays or other Tensors whose value is broadcast friendly.
+Internally, a Tensor will always cast it's set value to a NumPy array.
+
+```python
+import numpy as np
+x  = Tensor(np.ones((10,20)))
+y  = Tensor(np.ones((20,10)))
+z1 = x@y
+z2 = x@np.ones((20,10))       
+np.all(z1.value == z2.value)  # True
+```
+
+There are enough expressions defined to be able to create many neural networks.
 
 **Supported Tensor Methods**
 
@@ -39,6 +62,6 @@ x.grad  # 36.
 | Architectures    | DNN, CNN, Vanila Transformer                               | NumPy/Numba  |
 
 
-#### Citation
+#### Citation/Contribution
 
-If you find this project helpful in your research or work, I kindly ask that you cite it: [View Citation](./CITATION.cff). Thank you! 
+If you'd like to contribute please do! If you find this project helpful in your research or work, I kindly ask that you cite it: [View Citation](./CITATION.cff). Thank you! 
