@@ -13,7 +13,7 @@ relying only on NumPy/Numba/opt_einsum, verified against Pytorch*, and less than
 Pygrad's ``Tensor`` object takes as input numbers, lists, or NumPy arrays, now providing a ``.grad`` attribute.
 
 ``Tensors``:
-   * Store all operations performed on them
+   * Store all operations performed on them, with support for broadcasting
    * Perform backpropagation with ``.backward()``
    * Store gradients in ``.grad``
    * Support np.float16 to np.float128 data types
