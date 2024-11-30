@@ -58,7 +58,7 @@ html_sidebars = {
 }
 
 html_theme_options = {
-    "description": "A light autodifferentiation engine written in Python, based on NumPy and Numba.",
+    "description": "A lightweight differentiation engine written in Python.",
     "github_user": "baubels",
     "github_repo": "pygrad",
     "fixed_sidebar": True,
