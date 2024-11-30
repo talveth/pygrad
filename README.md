@@ -1,5 +1,5 @@
 
-### pygrad: Lightweight automatic differentiation engine written in Python.
+### pygrad: A lightweight differentiation engine written in Python.
 
 Documentation: https://baubels.github.io/pygrad/.
 
