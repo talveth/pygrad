@@ -18,6 +18,7 @@ pip install . (or .[examples] or .[dev])
 #### Usage
 
 Tensors accept the same input value as a NumPy array. Create them with Tensor(value) or tensor.array(value).
+Run backprop on them with `.backward()`.
 
 A simple usage example:
 
@@ -25,7 +26,7 @@ A simple usage example:
 from pygrad.tensor import Tensor
 x = Tensor(1)
 (((x**3 + x**2 + x + 1) - 1)**2).backward()
-x.grad  # 36.
+x.value, x.grad  # 1.0, 36.0
 ```
 
 Since `Tensor` store their value in `.value` and their gradient in `.grad`, it's easy to perform gradient descent.

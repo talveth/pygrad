@@ -7,8 +7,15 @@
 pygrad documentation
 =========================
 
-**pygrad** is a lightweight automatic differentiation engine written entirely in Python, 
-relying only on NumPy/Numba/opt_einsum, verified against Pytorch*, and less than 300 KBs in size.
+**pygrad** is a lightweight automatic differentiation engine:
+
+   * written entirely in Python,
+   * relying only on NumPy, Numba, and opt_einsum,
+   * verified against Pytorch^*,
+   * and less than 300kB in size.
+
+Pygrad will be useful to you if you are looking to compute gradients and/or perform 
+gradient descent for models with less than 1 million parameters.
 
 Pygrad's ``Tensor`` object operates like a NumPy array, additionally storing gradients.
 
@@ -43,6 +50,8 @@ For installation instructions and a quick glance at usage, see :doc:`usage`.
 All classes and functions can be found in :doc:`api`.
 For in-depth module descriptions, check out :doc:`modules`.
 
+If you are interesting in contributing, :ref:`please click here <contribs>`.
+
 .. Add your content using ``reStructuredText`` syntax. See the
 .. `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
 .. documentation for details.
@@ -56,6 +65,7 @@ For in-depth module descriptions, check out :doc:`modules`.
    examples
    api
    methods
+   contrib
 
 .. note::
    *All operations are verified against Pytorch, except for Conv2D gradients 
