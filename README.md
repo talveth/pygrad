@@ -1,5 +1,5 @@
 
-### pygrad: Lightweight automatic differentiation engine in NumPy/Numba.
+### pygrad: Lightweight automatic differentiation engine written in Python.
 
 Documentation: https://baubels.github.io/pygrad/.
 
