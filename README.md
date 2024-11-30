@@ -73,4 +73,7 @@ For example usage and in-depth descriptions of each component of pygrad, check o
 
 #### Citation/Contribution
 
-If you'd like to contribute please do! If you find this project helpful in your research or work, I kindly ask that you cite it: [View Citation](./CITATION.cff). Thank you! 
+If you find this project helpful in your research or work, I kindly ask that you cite it: [View Citation](./CITATION.cff). Thank you! 
+
+If there are issues with the project, please submit an issue. 
+Otherwise, please read [the current status for contributors](https://baubels.github.io/pygrad/contrib.html).
