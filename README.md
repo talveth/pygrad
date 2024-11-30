@@ -49,27 +49,9 @@ z2 = x@np.ones((20,10))
 np.all(z1.value == z2.value)  # True
 ```
 
-There are enough expressions defined to be able to create many neural networks.
-
-**Supported Tensor Methods**
-
-| Tensor Ops       | `pygrad.tensor`                      | Dependencies |
-| ---------------  | -------------                              | ------------ |
-| Magic methods    |  + - * / ** @                              | NumPy        |
-| Other math ops   | sum, reshape, transpose, mean, std, conv2D | NumPy        |
-| Common activations | relu, tanh, sigmoid                      | NumPy        |
-| Loss              | softmax                                   | NumPy, Numba  |
-
-**Supported Objects**
-
-| Extraneous Ops   | Created Classes                                            | Dependencies |
-| ---------------  | -------------                                              | ------------ |
-| Common layers    |  ReLU, Dropout, AddNorm, Linear, Softmax, Flatten, Conv2D  | NumPy, Numba |
-| Losses           | BCELoss, CCELoss                                           | NumPy, Numba |
-| Optimizers       | SGD, SGD_Momentum, RMSProp, Adam                           | NumPy        |
-| Architectures    | DNN, CNN, Vanila Transformer                               | NumPy/Numba  |
-
-For example usage and in-depth descriptions of each component of pygrad, check out [the docs](https://baubels.github.io/pygrad/).
+There are enough expressions defined to be able to create many different models.
+For example usage and in-depth descriptions of each component of pygrad, 
+check out [the docs](https://baubels.github.io/pygrad/).
 
 #### Citation/Contribution
 

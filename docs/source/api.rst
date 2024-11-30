@@ -20,7 +20,7 @@ pygrad
 architectures
 -------------
 
-``architectures`` holds three example architectures defined solely using this library: A DNN, a CNN, and a Vanila Vaswani Transformer.
+``architectures`` holds three example architectures defined solely using this library: A DNN, a CNN, and a Vanila Vaswani Transformer: https://github.com/baubels/pygrad/tree/master/architectures.
 
 .. autosummary::
    :toctree: generated
@@ -28,17 +28,10 @@ architectures
    
    architectures
 
-
 examples
 -------------
 
 ``examples`` shows training pipelines for each of the architectures defined in ``architectures``.
 Running these will require installing the library with ``.[examples]``.
 
-.. autosummary::
-   :toctree: generated
-   :recursive:
-   
-   examples
-
-
+Please see: https://github.com/baubels/pygrad/tree/master/examples
