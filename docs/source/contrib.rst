@@ -1,7 +1,7 @@
 
 .. _contribs:
 
-Contributors / Collaboration
+Contributions
 =============================
 
 Thank you for your interest in this project! 

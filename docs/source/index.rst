@@ -50,7 +50,7 @@ For installation instructions and a quick glance at usage, see :doc:`usage`.
 All classes and functions can be found in :doc:`api`.
 For in-depth module descriptions, check out :doc:`modules`.
 
-If you are interesting in contributing, :ref:`please click here <contribs>`.
+If you are interesting in contributing, :ref:`please click here <contribs>`. If you are wondering who I am, :ref:`click here <aboutme>`
 
 .. Add your content using ``reStructuredText`` syntax. See the
 .. `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
@@ -66,6 +66,7 @@ If you are interesting in contributing, :ref:`please click here <contribs>`.
    api
    methods
    contrib
+   about
 
 .. note::
    *All operations are verified against Pytorch, except for Conv2D gradients 
