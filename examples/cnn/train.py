@@ -19,15 +19,15 @@ from examples.cnn.utils import accuracy_fn, save_model
 def main():
 
     # load data
-    trainX = np.load("data/MNIST_trainX.npy")*255.
-    trainY = np.load("data/MNIST_trainY.npy")
+    trainX = np.load("examples/cnn/MNIST_trainX.npy")*255.
+    trainY = np.load("examples/cnn/MNIST_trainY.npy")
 
     # prepare model
     model       = CNN()
     loss_fn     = CCELoss()
-    optim       = RMSProp(model.weights, beta=0.9, lr=0.01)
+    optim       = RMSProp(model.weights, beta=0.9, lr=0.001)
     n_epochs    = 2
-    batch_size  = 16
+    batch_size  = 64
 
     # train
     for e in range(n_epochs):
@@ -35,7 +35,7 @@ def main():
         random_perms = np.random.permutation(trainX.shape[0])
         trainX = np.array(trainX)[random_perms]
         trainY = np.array(trainY)[random_perms]
-        with tqdm.tqdm(range(0, len(trainX)//50-batch_size, batch_size)) as pbar:
+        with tqdm.tqdm(range(0, len(trainX)-batch_size, batch_size)) as pbar:
             for batch_idx in pbar:
                 optim.zero_grad()
                 x_val = Tensor(trainX[batch_idx:batch_idx+batch_size], learnable=False, leaf=True)
@@ -47,7 +47,6 @@ def main():
 
                 optim.step(loss)
                 model.model_reset()
-                
                 pbar.set_postfix({'epoch': e,
                                 'lr': optim.lr,
                                 'batch_idx': batch_idx,
@@ -56,7 +55,6 @@ def main():
                                 })
                 gc.collect()
         save_model(f"examples/cnn/model_saves/model_epoch_{e}", model)
-
 
 if __name__ == "__main__":
     main()

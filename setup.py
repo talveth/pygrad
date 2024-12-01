@@ -2,8 +2,8 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="pygrad",
-    version="0.0.1",
+    name="pygradproject",
+    version="0.0.2",
     packages=find_packages(exclude=[
                                     "examples",
                                     "tests",
@@ -16,8 +16,9 @@ setup(
     ],
     author="Danila Kurganov",
     author_email="dan.kurg@gmail.com",
-    description="Automatic Differentiation in Python using Numpy/Numba",
+    description="Lightweight Automatic Differentiation in Python.",
     long_description=open("README.md").read(),
+    long_description_content_type='text/markdown',
     url="https://github.com/baubels/pygrad",
     project_urls={
         "Documentation": "https://baubels.github.io/pygrad/",

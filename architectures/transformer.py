@@ -8,7 +8,6 @@ from pygrad.constants import PRECISION
 from pygrad.module import Module
 from pygrad.tensor import Tensor
 
-
 class Embedding:
     def __init__(self, d_vocab, d_model, dtype=PRECISION) -> None:
         self.d_vocab        = d_vocab

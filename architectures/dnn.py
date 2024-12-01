@@ -5,8 +5,9 @@ from pygrad.activations import ReLU
 from pygrad.basics import Dropout, Flatten, Linear
 from pygrad.module import Module
 from pygrad.tensor import Tensor
+from pygrad.constants import PRECISION
 
-PRECISION = np.float64
+
 class DNN(Module):
     def __init__(self, batch_size=1, label="DNN", 
                  dropout=0.10, dtype=PRECISION):

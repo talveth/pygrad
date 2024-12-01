@@ -21,15 +21,15 @@ from examples.dnn.utils import accuracy_fn, save_model
 def main():
 
     # load data
-    trainX = np.load("data/MNIST_trainX.npy")*255.
-    trainY = np.load("data/MNIST_trainY.npy")
+    trainX = np.load("examples/cnn/MNIST_trainX.npy")*255.
+    trainY = np.load("examples/cnn/MNIST_trainY.npy")
 
     # prepare model
     model = DNN()
     loss_fn     = CCELoss()
-    optim       = SGD(model.weights, lr=0.1)
+    optim       = SGD(model.weights, lr=0.01)
     n_epochs    = 2
-    batch_size  = 16
+    batch_size  = 64
 
     # train
     print("Training DNN")
@@ -39,7 +39,6 @@ def main():
         trainY = np.array(trainY)[random_perms]
         model.model_reset()
         with tqdm.tqdm(range(0, len(trainX)-batch_size, batch_size)) as pbar:
-        # with tqdm.tqdm(range(0, 50*batch_size, batch_size)) as pbar:
             for batch_idx in pbar:
                 optim.zero_grad()
                 x_val = Tensor(trainX[batch_idx:batch_idx+batch_size], learnable=False, leaf=True)

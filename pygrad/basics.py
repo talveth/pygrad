@@ -248,7 +248,7 @@ class Conv2D:
         assert isinstance(kW, int), "kW must be an integer"
         assert kW>0, "kW must be positive"
         assert isinstance(bias, bool), "bias must be a boolean"
-        assert isinstance(label (int, str)) or label is None, "label must be None, int, or str"
+        assert isinstance(label, (int, str)) or label is None, "label must be None, int, or str"
 
         self.o_dim  = o_dim
         self.i_dim  = i_dim

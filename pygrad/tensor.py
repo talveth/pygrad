@@ -12,7 +12,7 @@ from typing import Union
 import numpy as np
 
 from .constants import PRECISION
-from .numba_ops import softmax_grad
+from .numba_ops import softmax_grad, conv2D_fwd, conv2d_bwd
 
 
 warnings.simplefilter("once", category=UserWarning)
@@ -591,36 +591,26 @@ class Tensor:
         if self.shape[0] != other.shape[0]:
             self.new_value(np.repeat(self.value, other.shape[0], axis=0))
 
-        # self.n_conv_calls                       += 1
-        b, inC, H, W                            = other.shape
-        b, outC, inC, kH, kW                    = self.shape
-        output_np                               = np.zeros(shape=(b, outC, H-kH+1, W-kW+1))
-        for i in range(H-kH+1):
-            for j in range(W-kW+1):
-                for c in range(outC):
-                    output_np[:,c,i,j]  = np.einsum('i...->i', self.value[:,c,:,:,:] * other.value[:,:,i:i+kH,j:j+kW], optimize='optimal', dtype=self.dtype)
+        b, inC, H, W                    = other.shape
+        b, outC, inC, kH, kW            = self.shape
+        if self.dtype in [np.float16, np.float128]:
+            output_np                       = conv2D_fwd(self.value.astype(np.float32), other.value.astype(np.float32))
+        else:
+            output_np                       = conv2D_fwd(self.value, other.value)
         new                             = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True, dtype=self.dtype)
 
         def bpass():
             # using Pytorch convention here:
             # gradients are averaged across the out_channels arguments
-            # if the same conv is called >1 times per forward pass, average the gradient over those number of times
-            # average the other gradient with the number of out_channels
-            
-            # self.reset_grad()
-            # other.reset_grad()
-            for i in range(H-kH+1):
-                for j in range(W-kW+1):
-                    for c in range(outC):
-                        self.grad[:,c,:,:,:]   += np.einsum('...,...->...', other.value[:,:,i:i+kH, j:j+kW], 
-                                                            new.grad[:,c,i,j].reshape(-1,1,1,1), optimize='optimal', dtype=self.dtype)  # (b, in_channels, kH, kW)
-                        temp_other_grad_a       = np.einsum('...,...->...', self.value, 
-                                                            new.grad[:,c,i,j].reshape(-1,1,1,1,1), optimize='optimal', dtype=self.dtype)                     # (b,out_c, in_c, kH, kW)
-                        other.grad[:,:,i:i+kH,j:j+kW] += np.sum(temp_other_grad_a, axis=(1), dtype=self.dtype)
-
-            # self.grad                          *= self.n_conv_calls
-            other.grad                         /= outC
-        new.bpass                               = bpass
+            if self.dtype in [np.float16, np.float128]:
+                self_grad, other_grad            = conv2d_bwd(self.value.astype(np.float32), 
+                                                              other.value.astype(np.float32), 
+                                                              new.grad.astype(np.float32))
+            self_grad, other_grad                = conv2d_bwd(self.value, other.value, new.grad)
+            self.grad                           += self_grad
+            other.grad                          += other_grad
+            other.grad                          /= self.shape[2]
+        new.bpass                                = bpass
         return new
 
     def create_graph(self) -> tuple[list,list]:
