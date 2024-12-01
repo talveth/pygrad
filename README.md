@@ -11,6 +11,8 @@ The main component is the `Tensor` class supporting many math operations. `Tenso
 #### Installation
 
 ```bash
+pip install pygradproject
+# OR
 git clone https://github.com/baubels/pygrad.git
 pip install . (or .[examples] or .[dev])
 ```

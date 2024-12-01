@@ -6,15 +6,19 @@ Usage
 Installation
 ------------
 
-To use pygrad, clone `the repository <https://github.com/baubels/pygrad>`_ and install one of the following.
+To use pygrad, either do ``pip install pygradproject`` or
+ clone `the repository <https://github.com/baubels/pygrad>`_ and install:
 
 .. code-block:: console
 
    $ pip install .               # normal install
-   $ pip install .[examples]     # normal + examples
-   $ pip install .[dev]          # normal + dev
+   $ pip install .[examples]     # normal + examples (for dnn/cnn/transformer training)
+   $ pip install .[dev]          # normal + dev      (for development purposes)
 
 This will install pygrad with the Python importable name ``pygrad``.
+
+If your installing with ``[examples]`` and want to use the examples, 
+download the missing datasets in the repo's `/examples <https://github.com/baubels/pygrad/tree/master/examples>`_.
 
 
 Basic Usage

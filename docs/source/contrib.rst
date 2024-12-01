@@ -1,7 +1,7 @@
 
 .. _contribs:
 
-Contributions
+Contributions/Problems
 =============================
 
 Thank you for your interest in this project! 
