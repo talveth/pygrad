@@ -11,7 +11,7 @@ setup(
                                     ]),
     install_requires=[
         "numba>=0.60.0",
-        "numpy<=2.0.2",
+        "numpy==1.23.0",
         "opt_einsum>=3.4.0",
     ],
     author="Danila Kurganov",
