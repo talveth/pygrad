@@ -261,10 +261,10 @@ class TestTensorExtras(unittest.TestCase):
             losspy              = torch.sum(out1py)
             losspy.backward(retain_graph=True)
 
-            self.assertTrue(np.all(np.isclose(loss.value, losspy.detach().numpy())))
-            self.assertTrue(np.all(np.isclose(out1.value, out1py.detach().numpy())))
-            self.assertTrue(np.all(np.isclose(np.sum(k1.grad,axis=0), k1_torch.grad.detach().numpy()))) # summing over the batch dimension
-            self.assertTrue(np.all(np.isclose(X.grad, xpy.grad.detach().numpy())))
+            self.assertTrue(np.all(np.isclose(loss.value, losspy.detach().numpy(), rtol=tol)))
+            self.assertTrue(np.all(np.isclose(out1.value, out1py.detach().numpy(), rtol=tol)))
+            self.assertTrue(np.all(np.isclose(np.sum(k1.grad,axis=0), k1_torch.grad.detach().numpy(), rtol=tol))) # summing over the batch dimension
+            self.assertTrue(np.all(np.isclose(X.grad, xpy.grad.detach().numpy(), rtol=tol)))
 
     # def test_conv2D_double(self):
 
