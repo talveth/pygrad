@@ -12,7 +12,7 @@ from typing import Union
 import numpy as np
 
 from .constants import PRECISION
-from .numba_ops import softmax_grad, conv2D_fwd, conv2d_bwd
+from .numba_ops import softmax_grad, conv2d_fwd, conv2d_bwd
 
 
 warnings.simplefilter("once", category=UserWarning)
@@ -594,10 +594,10 @@ class Tensor:
         b, inC, H, W                    = other.shape
         b, outC, inC, kH, kW            = self.shape
         if self.dtype in [np.float16, np.float128]:
-            output_np                       = conv2D_fwd(self.value.astype(np.float32), other.value.astype(np.float32))
+            output_np                       = conv2d_fwd(self.value.astype(np.float32), other.value.astype(np.float32))
         else:
-            output_np                       = conv2D_fwd(self.value, other.value)
-        new                             = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True, dtype=self.dtype)
+            output_np                       = conv2d_fwd(self.value, other.value)
+        new                                 = Tensor(value=output_np, _prev=(self,other), label="Conv2D", leaf=True, dtype=self.dtype)
 
         def bpass():
             # using Pytorch convention here:
@@ -606,10 +606,10 @@ class Tensor:
                 self_grad, other_grad            = conv2d_bwd(self.value.astype(np.float32), 
                                                               other.value.astype(np.float32), 
                                                               new.grad.astype(np.float32))
-            self_grad, other_grad                = conv2d_bwd(self.value, other.value, new.grad)
+            else:
+                self_grad, other_grad            = conv2d_bwd(self.value, other.value, new.grad)
             self.grad                           += self_grad
-            other.grad                          += other_grad
-            other.grad                          /= self.shape[2]
+            other.grad                          += other_grad/self.shape[1]
         new.bpass                                = bpass
         return new
 

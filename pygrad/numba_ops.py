@@ -80,7 +80,7 @@ def mat_sum(mat1,mat2):
     return res
 
 @nb.njit(fastmath=True,parallel=True,cache=False)
-def conv2D_fwd(kernel,signal):
+def conv2d_fwd(kernel,signal):
     b, outC, inC, kH, kW = kernel.shape
     b, inC, H, W         = signal.shape
     res                  = np.empty((b, outC, H-kH+1, W-kW+1), dtype=kernel.dtype)
@@ -92,29 +92,28 @@ def conv2D_fwd(kernel,signal):
                     res[bd,c,i,j] = mat_sum(kernel[bd,c,:,:,:],signal[bd,:,i:i+kH,j:j+kW])    
     return res
 
-@nb.njit(fastmath=True,parallel=True,cache=False)
+
+@nb.njit(fastmath=False,parallel=True,cache=False)
 def conv2d_bwd(kernel, signal, grad):
     b, outC, inC, kH, kW = kernel.shape
     b, inC, H, W         = signal.shape
     self_grad            = np.zeros_like(kernel, dtype=kernel.dtype)
     other_grad           = np.zeros_like(signal, dtype=kernel.dtype)
     
-    for i in nb.prange(H-kH+1):
-        for j in nb.prange(W-kW+1):
-            for c in nb.prange(outC):
-
+    for i in range(H-kH+1):
+        for j in range(W-kW+1):
+            for c in range(outC):
                 res_self_grad = np.empty((b,inC,kH,kW), dtype=kernel.dtype)
                 res_othe_grad = np.empty((b,inC,kH,kW), dtype=kernel.dtype)
-                for bd in nb.prange(b):
-                    for ic in nb.prange(inC):
-                        for h in nb.prange(kH):
-                            for w in nb.prange(kW):
+                for bd in range(b):
+                    for ic in range(inC):
+                        for h in range(kH):
+                            for w in range(kW):
                                 res_self_grad[bd,ic,h,w] = signal[bd,ic,i+h,j+w]*grad[bd,c,i,j]
                                 res2 = 0
-                                for oc in nb.prange(outC):
+                                for oc in range(outC):
                                     res2 += kernel[bd,oc,ic,h,w]*grad[bd,c,i,j]
                                 res_othe_grad[bd,ic,h,w] = res2
                 self_grad[:,c,:,:,:]          += res_self_grad
                 other_grad[:,:,i:i+kH,j:j+kW] += res_othe_grad
-
     return self_grad, other_grad

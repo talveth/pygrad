@@ -230,20 +230,28 @@ class TestTensorExtras(unittest.TestCase):
         input_shapes    = [
                             (1,1,1,1), (1,1,4,4), (1,1,10,10), (5,1,1,1), (5,1,4,4), (5,1,10,10),
                             (1,3,1,1), (1,3,4,4), (1,3,10,10),
-                            (10,3,1,1), (10,3,4,4), (10,3,10,10),
-                            (10,3,3,3), (10,3,4,4), (10,3,10,10),
+                            (10,3,1,1), 
+                            (10,3,4,4), 
+                            (10,3,10,10),
+                            (10,3,3,3), 
+                            (10,3,4,4), 
+                            (10,3,10,10),
                             (10,3,3,1), (10,3,1,3), (10,3,10,10),
                           ]
         kernel_shapes   = [
                             (1,1,1,1,1), (1,1,1,1,1), (1,1,1,1,1), (1,1,1,1,1), (1,1,1,1,1), (1,1,1,1,1),
                             (1,1,3,1,1), (1,1,3,1,1), (1,1,3,1,1), 
-                            (1,10,3,1,1), (1,10,3,1,1), (1,10,3,1,1),
-                            (1,10,3,3,1), (1,10,3,1,3), (1,10,3,3,3),
+                            (1,10,3,1,1), 
+                            (1,10,3,1,1), 
+                            (1,10,3,1,1),
+                            (1,10,3,3,1), 
+                            (1,10,3,1,3), (1,10,3,3,3),
                             (1,10,3,3,1), (1,10,3,1,3), (1,10,3,3,3),
                           ]
         
         for i in range(len(input_shapes)):
-
+            nb.njit(fastmath=True,parallel=False,cache=True)(pygrad.numba_ops.conv2d_fwd.py_func)
+            nb.njit(fastmath=True,parallel=False,cache=True)(pygrad.numba_ops.conv2d_bwd.py_func)
             inp_val             = np.random.uniform(0,1,input_shapes[i])
             ker_val             = np.random.uniform(0,1,kernel_shapes[i])
 
@@ -261,6 +269,10 @@ class TestTensorExtras(unittest.TestCase):
             losspy              = torch.sum(out1py)
             losspy.backward(retain_graph=True)
 
+            # print(loss.value/losspy.detach().numpy())
+            # print(out1.value/out1py.detach().numpy())
+            # print(k1.grad/k1_torch.grad.detach().numpy())
+            # print(X.grad/xpy.grad.detach().numpy(), 'x.grad.shape: ', X.grad.shape, 'xpy.grad.shape: ', xpy.grad.shape, 'X: ', X.shape, 'k1: ', k1.shape)
             self.assertTrue(np.all(np.isclose(loss.value, losspy.detach().numpy(), rtol=tol)))
             self.assertTrue(np.all(np.isclose(out1.value, out1py.detach().numpy(), rtol=tol)))
             self.assertTrue(np.all(np.isclose(np.sum(k1.grad,axis=0), k1_torch.grad.detach().numpy(), rtol=tol))) # summing over the batch dimension

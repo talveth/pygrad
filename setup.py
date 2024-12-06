@@ -11,7 +11,7 @@ setup(
                                     ]),
     install_requires=[
         "numba>=0.60.0",
-        "numpy==1.23.0",
+        "numpy==1.26.0",
         "opt_einsum>=3.4.0",
     ],
     author="Danila Kurganov",
@@ -33,6 +33,6 @@ setup(
     python_requires='>=3.10',
     extras_require={
         "examples": ["dill", "tqdm"],
-        "dev": ["pytest", "sphinx", "torch", "numpy==1.23.0"]
+        "dev": ["pytest", "sphinx", "torch", "dill", "numpy==1.26.0"]
     },
 )
