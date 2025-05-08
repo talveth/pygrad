@@ -1,7 +1,7 @@
 
 ### pygrad: A lightweight differentiation engine written in Python.
 
-Documentation: https://baubels.github.io/pygrad/.
+Documentation: https://talveth.github.io/pygrad/.
 
 This is a lightweight (<300kB) automatic differentiation engine based on NumPy, Numba, and opt_einsum.
 Included is a differentiable Tensor class, layers such as Dropout/Linear/Attention, loss functions such as BCE/CCE, optimizers such as SGD/RMSProp/Adam, and an example DNN/CNN/Transformer architecture. This library is a good alternative if you want to do backpropagation on simple and small functions or networks, without much overhead.
@@ -53,11 +53,11 @@ np.all(z1.value == z2.value)  # True
 
 There are enough expressions defined to be able to create many different models.
 For example usage and in-depth descriptions of each component of pygrad, 
-check out [the docs](https://baubels.github.io/pygrad/).
+check out [the docs](https://talveth.github.io/pygrad/).
 
 #### Citation/Contribution
 
 If you find this project helpful in your research or work, I kindly ask that you cite it: [View Citation](./CITATION.cff). Thank you! 
 
 If there are issues with the project, please submit an issue. 
-Otherwise, please read [the current status for contributors](https://baubels.github.io/pygrad/contrib.html).
+Otherwise, please read [the current status for contributors](https://talveth.github.io/pygrad/contrib.html).
