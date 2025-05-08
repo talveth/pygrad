@@ -1,0 +1,18 @@
+﻿pygrad.numba\_ops
+=================
+
+.. automodule:: pygrad.numba_ops
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      combined_softmax_backprop
+      conv2d_bwd
+      conv2d_fwd
+      find_sum_grad_3D
+      mat_sum
+      softmax_grad
+      softmax_matmul_3D
+   

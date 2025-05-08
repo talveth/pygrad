@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Class methods &#8212; pygrad 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributions/Problems" href="contrib.html" />
+    <link rel="prev" title="architectures.transformer" href="generated/architectures.transformer.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygrad</a></h1>
+
+
+
+<p class="blurb">A lightweight differentiation engine written in Python.</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=baubels&repo=pygrad&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Class methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.tensor.Tensor"><code class="docutils literal notranslate"><span class="pre">Tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.tensor.array"><code class="docutils literal notranslate"><span class="pre">array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.basics.AddNorm"><code class="docutils literal notranslate"><span class="pre">AddNorm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.basics.Conv2D"><code class="docutils literal notranslate"><span class="pre">Conv2D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.basics.Dropout"><code class="docutils literal notranslate"><span class="pre">Dropout</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.basics.Flatten"><code class="docutils literal notranslate"><span class="pre">Flatten</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.basics.Linear"><code class="docutils literal notranslate"><span class="pre">Linear</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.basics.Softmax"><code class="docutils literal notranslate"><span class="pre">Softmax</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.activations.ReLU"><code class="docutils literal notranslate"><span class="pre">ReLU</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.losses.BCELoss"><code class="docutils literal notranslate"><span class="pre">BCELoss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.losses.CCELoss"><code class="docutils literal notranslate"><span class="pre">CCELoss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.optims.Adam"><code class="docutils literal notranslate"><span class="pre">Adam</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.optims.RMSProp"><code class="docutils literal notranslate"><span class="pre">RMSProp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.optims.SGD"><code class="docutils literal notranslate"><span class="pre">SGD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.optims.SGD_Momentum"><code class="docutils literal notranslate"><span class="pre">SGD_Momentum</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pygrad.module.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contrib.html">Contributions/Problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About me</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="generated/architectures.transformer.html" title="previous chapter">architectures.transformer</a></li>
+      <li>Next: <a href="contrib.html" title="next chapter">Contributions/Problems</a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-pygrad.tensor">
+<span id="class-methods"></span><span id="tensormethods"></span><h1>Class methods<a class="headerlink" href="#module-pygrad.tensor" title="Link to this heading">¶</a></h1>
+<p>Module storing the main Tensor class and related methods.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.tensor.</span></span><span class="sig-name descname"><span class="pre">Tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value:</span> <span class="pre">list</span> <span class="pre">|</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_prev:</span> <span class="pre">tuple</span> <span class="pre">=</span> <span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.tensor.Tensor" title="Link to this definition">¶</a></dt>
+<dd><p>The main Tensor object.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.T">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">T</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></em><a class="headerlink" href="#pygrad.tensor.Tensor.T" title="Link to this definition">¶</a></dt>
+<dd><p>Transposes self.value.</p>
+<p>If self is 0 or 1 dimensional, no self is returned without modification.
+Otherwise, the last two dimensions of self are flipped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">integer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">floating</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__add__" title="Link to this definition">¶</a></dt>
+<dd><p>Performs self.Tensor + other, returning a new Tensor object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>np.integer</em><em>, </em><em>np.floating</em><em>, </em><em>np.ndarray</em><em>, </em><em>list</em><em>, </em><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a><em>)</em>) – the object to add with shape broadcastable to self.shape.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idcs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.tensor.Tensor.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Fetches self.value[idcs]. Identical to NumPy syntax for fetching indices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value:</span> <span class="pre">list</span> <span class="pre">|</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_prev:</span> <span class="pre">tuple</span> <span class="pre">=</span> <span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes a Tensor.</p>
+<dl class="simple">
+<dt>A Tensor at all times holds:</dt><dd><ul class="simple">
+<li><p>A value assigned to it indicating its value.</p></li>
+<li><p>A gradient of the same shape as its value indicating its gradient.</p></li>
+<li><p>A function indicating how to pass a gradient to its children Tensors.</p></li>
+<li><p>A computational graph for all Tensors that eventually resulted in the Tensor.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Tensors store operations performed, allowing them to calculate the gradients of all Tensors in their 
+computational graph via .backward().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>Is either a numeric value</em><em> or </em><em>a list/np.ndarray. Complex</em><em> or </em><em>boolean values are not supported. Value is automatically recast to dtype.</em>) – The input Tensor value.</p></li>
+<li><p><strong>label</strong> – A string giving the Tensor an identifiable name. Defaults to “”.</p></li>
+<li><p><strong>dtype</strong> – The dtype to cast the input value. Must be one of np.bool, np.integer, np.floating.</p></li>
+<li><p><strong>learnable</strong> – Optional. A boolean indicating whether or not to compute gradients for _prev Tensors this Tensor has.
+Setting this to False means the computational graph will stop at this node.
+This node will still have gradients computed.</p></li>
+<li><p><strong>leaf</strong> – Optional. A boolean indicating if the Tensor is to be considered a leaf node in the computational graph.      
+Leaf nodes will have gradients tracked, but won’t appear as a weight in self.weights.</p></li>
+<li><p><strong>_prev</strong> – Optional. An empty tuple or a tuple of Tensor objects, referencing objects to pass gradients 
+too when doing a backwards pass. _prev is automatically filled when performing a 
+tensor method, manual specification is not necessary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A produced Tensor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__matmul__">
+<span class="sig-name descname"><span class="pre">__matmul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__matmul__" title="Link to this definition">¶</a></dt>
+<dd><p>Performs matrix multiplication with self and other: <a class="reference external" href="mailto:self&#37;&#52;&#48;other">self<span>&#64;</span>other</a>.</p>
+<p>Matrix multiplication is performed between the last two dimensions of self and other, broadcasting all those remaining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – The matrix to perform matrix multiplication against.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__mul__">
+<span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">integer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">floating</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__mul__" title="Link to this definition">¶</a></dt>
+<dd><p>Performs multiplication between the values of self and other. 
+If self and other are matrices, this is equivalent to the hadamard product.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>One</em><em> of </em><em>int</em><em>, </em><em>float</em><em>, </em><em>np.integer</em><em>, </em><em>np.floating</em><em>, </em><em>np.ndarray</em><em>, or </em><em>Tensor.</em>) – The value to multiply against. Must be broadcastable in shape to self.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__neg__">
+<span class="sig-name descname"><span class="pre">__neg__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__neg__" title="Link to this definition">¶</a></dt>
+<dd><p>Performs -1*self.Tensor, returning a new Tensor object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__pow__">
+<span class="sig-name descname"><span class="pre">__pow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">integer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">floating</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__pow__" title="Link to this definition">¶</a></dt>
+<dd><p>Raises the Tensor to a power of n.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n</strong> – The power value to raise the current Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.backward" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the gradients of all Tensors in self’s computation graph, storing results in self.topo and self.weights.</p>
+<p>self is initialized with gradient 1, incrementing all children gradients by this multiplier.</p>
+<dl class="simple">
+<dt>This method first creates two topological graphs of self.</dt><dd><ol class="arabic simple">
+<li><p>A backwards-pass graph including all Tensors contributing to self.</p></li>
+<li><dl class="simple">
+<dt>The backwards-pass graph, now omitting all Tensors with leaf=True.</dt><dd><p>This is useful for seeing the exact parameters contributing to the 
+current Tensor, ignoring any Tensors that were produced as intermediary
+values for producing the current Tensor.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reset_grad</strong> – Whether or not to reset the current backwards pass gradients.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.conv2D">
+<span class="sig-name descname"><span class="pre">conv2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.conv2D" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a 2D convolution on other using self as the kernel.
+Strides are set to 1 by default, with no padding.
+Output a new Tensor.</p>
+<dl class="simple">
+<dt>If self.shape = (1, out_channels, in_channels, kH, kW)</dt><dd><p>other.shape = (bs, in_channels, H, W)
+output.shape = (bs, out_channels, H-kH+1, W-kW+1)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>Tensor.</em>) – A 4D Tensor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.create_graph">
+<span class="sig-name descname"><span class="pre">create_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.create_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Creates two reverse-ordered topological graphs: topo and weights.</p>
+<p>_topo_ is the full backwards pass computational graph, which includes all 
+intermediary Tensors. _weights_ is a subgraph, containing only the Tensors
+containing learnable weights.</p>
+<p>For example, performing y = x**2 + 1 will create the following graphs:</p>
+<ul class="simple">
+<li><p>topo, containing: x**2 + 1, x**2, 1, and x.</p></li>
+<li><p>weights, containing: x</p></li>
+</ul>
+<p>although all nodes in topo were responsible for producing a gradient for x, 
+only the x node contains weights which would need to be updated by this gradient.</p>
+<p>Both graphs are lists that perform a pre-order traversal starting at self as the root node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>topo[list], weights[list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.log" title="Link to this definition">¶</a></dt>
+<dd><p>Applies the natural logarithm to self.</p>
+<p>Negative values will raise an error.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.mask_idcs">
+<span class="sig-name descname"><span class="pre">mask_idcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask_idcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.mask_idcs" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a mask to the Tensor via an array indicating indices of self.value. 
+Outputs a new Tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mask_idcs</strong> (<em>tuple</em>) – tuple of indices from which to mask values of self.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The mask value. Defaults to 0.0 indicating that chosen indices are now set to 0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.mean">
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.mean" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a new Tensor with value being the average of self’s value along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>None</em><em>, </em><em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em>) – The axis to perform a mean over.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em>) – Whether or not to keep the existing dimensions. True is yes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.new_value">
+<span class="sig-name descname"><span class="pre">new_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.new_value" title="Link to this definition">¶</a></dt>
+<dd><p>Assigns a new value to the Tensor, Tensor.value = x, and resets gradients to 0 without changing computational graph topology.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.relu">
+<span class="sig-name descname"><span class="pre">relu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.relu" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a point-wise ReLU to the Tensor values. Outputs a new Tensor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.reset_grad">
+<span class="sig-name descname"><span class="pre">reset_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.reset_grad" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the gradient of the Tensor to 0, maintaining all other attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.reshape">
+<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.reshape" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a new Tensor with Tensor.value.shape == shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>shape</strong> – A tuple indicating the new shape self.value has to take.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.sigmoid">
+<span class="sig-name descname"><span class="pre">sigmoid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.sigmoid" title="Link to this definition">¶</a></dt>
+<dd><p>Applies sigmoid activation to self, returning a new Tensor.</p>
+<p>self.value has to be of shape (…, 1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.softmax">
+<span class="sig-name descname"><span class="pre">softmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.softmax" title="Link to this definition">¶</a></dt>
+<dd><p>Applies softmax to self. Softmax is performed on the last axis.</p>
+<dl class="simple">
+<dt>self.shape has to be either 3 or 4 dimensional.</dt><dd><ul class="simple">
+<li><p>(B, H, W)</p></li>
+<li><p>(B, O, H, W)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns a copy of the Tensor, with the softmax’d value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.softmax_log">
+<span class="sig-name descname"><span class="pre">softmax_log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.softmax_log" title="Link to this definition">¶</a></dt>
+<dd><p>Computes .softmax().log() in one go. Use this if the former has numerical issues.</p>
+<dl class="simple">
+<dt>self.shape has to be either 3 or 4 dimensional.</dt><dd><ul class="simple">
+<li><p>(B, H, W)</p></li>
+<li><p>(B, O, H, W)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns a copy of the Tensor, with the softmax’d value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.std">
+<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.std" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a new Tensor with value being the standard deviation of self along the specified axis.
+No bias correction performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>integer</em>) – axis over which to perform a standard deviation over</p></li>
+<li><p><strong>keepdim</strong> (<em>bool</em><em> (</em><em>defaults to True</em><em>)</em>) – whether or not to keep the axis dimension as self</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.sum">
+<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.sum" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a summation on self.value according to axis chosen. Returns a new Tensor object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>None</em><em> (</em><em>default</em><em>)</em><em>, </em><em>int</em><em>, or </em><em>tuple</em><em> of </em><em>ints.</em>) – Determines which axis to sum self.value over. Defaults to None: summing over all axes.</p></li>
+<li><p><strong>keepdims</strong> – Indicates whether to keep the current shape of self after summation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.tanh">
+<span class="sig-name descname"><span class="pre">tanh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.tanh" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a point-wise tanh activation to the Tensor. Outputs a new Tensor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.tensor.Tensor.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.Tensor.transpose" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a new Tensor with the same data but transposed axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> – If specified, it must be a tuple or list which contains a 
+permutation of [0,1,…,N-1] where N is the number of axes of self. 
+The ith axis of the returned array will correspond to the axis 
+numbered axes[i] of the input. If not specified, defaults to 
+the reverse of the order of the axes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygrad.tensor.array">
+<span class="sig-prename descclassname"><span class="pre">pygrad.tensor.</span></span><span class="sig-name descname"><span class="pre">array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.tensor.array" title="Link to this definition">¶</a></dt>
+<dd><p>Helper function designed for initializing a <cite>Tensor</cite> object in the same way as a NumPy array.
+Ensure inputs match those of <cite>Tensor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <cite>Tensor</cite> object with fields (<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p id="basics-methods">Basic layers:</p>
+<p id="module-pygrad.basics">Module storing class-defined layers.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.basics.AddNorm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.basics.</span></span><span class="sig-name descname"><span class="pre">AddNorm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.AddNorm" title="Link to this definition">¶</a></dt>
+<dd><p>Performs AddNorm on an input x and skip connection value skip.
+The forward pass performs the following, outputting a Tensor:</p>
+<p>y = x + skip
+mu= mean of y
+sd= sd of y
+output = gain * (y-mu)/sd + bias</p>
+<p>gain defaults to 1.0.
+bias defaults to 0.0.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.AddNorm.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.basics.AddNorm.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.AddNorm.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.AddNorm.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.basics.AddNorm.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.basics.AddNorm.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.basics.Conv2D">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.basics.</span></span><span class="sig-name descname"><span class="pre">Conv2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kH:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kW:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Conv2D'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Conv2D" title="Link to this definition">¶</a></dt>
+<dd><p>Performs Conv2D from an input dimension i_dim to an output dimension o_dim using a kernel (kH, kW).</p>
+<p>Kernels are initialized using Kaiming Uniform initialization.
+Only single strides are performed. No output padding is performed.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Conv2D.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.basics.Conv2D.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Conv2D.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kH:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kW:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Conv2D'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.basics.Conv2D.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialization for the Conv2D class.</p>
+<p>Conv2D is a set of kernels, that calls on an input data x: Cx + B.</p>
+<p>C is the convolution, B is the bias.</p>
+<p>C is of shape (1, o_dim, i_dim, kH, kW), the leading dimension being the batch dimension.</p>
+<dl class="simple">
+<dt>If bias is True:</dt><dd><p>B is of shape (1, o_dim, 1, 1)</p>
+</dd>
+</dl>
+<p>Weights are initialized via Kaiming Uniform Initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>o_dim</strong> (<em>int</em>) – The output channel dimension of the convolution. This indicates the number of kernels to apply to the input.</p></li>
+<li><p><strong>i_dim</strong> (<em>int</em>) – The number of channels of the input.</p></li>
+<li><p><strong>kH</strong> (<em>int</em>) – the height of the kernel</p></li>
+<li><p><strong>kW</strong> (<em>int</em>) – the width of the kernel</p></li>
+<li><p><strong>bias</strong> (<em>bool</em>) – Whether or not to include the bias term after performing the initial convolution. Defaults to true.</p></li>
+<li><p><strong>label</strong> (<em>None</em><em>, </em><em>int</em><em>, or </em><em>str. Defaults to &quot;Conv2D&quot;</em>) – A label for the layer.</p></li>
+<li><p><strong>dtype</strong> (<em>The data types allowable by the Tensor class.</em>) – The data type of the weights and gradients. Defaults to np.float64.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Conv2D.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.basics.Conv2D.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.basics.Conv2D.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.basics.Conv2D.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.basics.Dropout">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.basics.</span></span><span class="sig-name descname"><span class="pre">Dropout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Dropout" title="Link to this definition">¶</a></dt>
+<dd><p>Dropout Class with specified rate parameter.
+Randomly masks input values with a probability of rate.</p>
+<p>Rate defaults to 0.1.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Dropout.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.basics.Dropout.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Dropout.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Dropout.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.basics.Dropout.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.basics.Dropout.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.basics.Flatten">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.basics.</span></span><span class="sig-name descname"><span class="pre">Flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Flatten'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Flatten" title="Link to this definition">¶</a></dt>
+<dd><p>Flattens an input by reshaping it into a 1D Tensor.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Flatten.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.basics.Flatten.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Flatten.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Flatten'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.basics.Flatten.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Flatten.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.basics.Flatten.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.basics.Flatten.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.basics.Flatten.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.basics.Linear">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.basics.</span></span><span class="sig-name descname"><span class="pre">Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Linear" title="Link to this definition">¶</a></dt>
+<dd><p>Linear 2D layer. Performs Wx + B on an input x.</p>
+<p>Inputs and outputs are in 3D: (bs, h, w)
+Weights are initialized using Kaiming Uniform initialization.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Linear.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.basics.Linear.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Linear.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o_dim:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.basics.Linear.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes a Dense Linear Layer with Kaiming Uniform initialization.</p>
+<p>A Dense linear layer is Wx + B.</p>
+<p>W is initialized as a Tensor of shape (1, i_dim, o_dim); with the leading dimension indicating the batch dimension.
+if bias is True: B is initialized as a Tensor of shape (1, 1, o_dim); the leading dimension indicating the batch dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i_dim</strong> (<em>int</em>) – The input data dimension to the layer.</p></li>
+<li><p><strong>o_dim</strong> (<em>int</em>) – The output data dimension of the layer.</p></li>
+<li><p><strong>bias</strong> (<em>bool.</em>) – Whether or not to include the bias term. Defaults to True.</p></li>
+<li><p><strong>label</strong> (<em>None</em><em>, </em><em>int</em><em>, </em><em>str</em><em> (</em><em>defaults to &quot;Linear&quot;</em><em>)</em>) – An optional label to give to the layer.</p></li>
+<li><p><strong>dtype</strong> (<em>The data types allowable by the Tensor class.</em>) – The data type of the weights and gradients. Defaults to np.float64.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Linear.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.basics.Linear.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.basics.Linear.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.basics.Linear.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.basics.Softmax">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.basics.</span></span><span class="sig-name descname"><span class="pre">Softmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Softmax'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Softmax" title="Link to this definition">¶</a></dt>
+<dd><p>Performs Softmax on an input.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Softmax.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.basics.Softmax.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Softmax.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Softmax'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.basics.Softmax.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.basics.Softmax.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.basics.Softmax.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.basics.Softmax.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.basics.Softmax.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Activation functions:</p>
+<p id="module-pygrad.activations">Module storing class-defined activation functions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.activations.ReLU">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.activations.</span></span><span class="sig-name descname"><span class="pre">ReLU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ReLU'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.activations.ReLU" title="Link to this definition">¶</a></dt>
+<dd><p>Performs ReLU activation, defined as a Class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.activations.ReLU.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.activations.ReLU.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.activations.ReLU.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ReLU'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.activations.ReLU.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.activations.ReLU.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.activations.ReLU.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.activations.ReLU.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.activations.ReLU.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Losses:</p>
+<p id="module-pygrad.losses">Module storing class-defined loss functions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.losses.BCELoss">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.losses.</span></span><span class="sig-name descname"><span class="pre">BCELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BCELoss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.losses.BCELoss" title="Link to this definition">¶</a></dt>
+<dd><p>Binary Cross Entropy Loss.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.losses.BCELoss.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.losses.BCELoss.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the BCE on pred and target, summing over the batch dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred</strong> – A Tensor of shape (batch_size, 1, 1)
+Values in [0,1]</p></li>
+<li><p><strong>target</strong> – A Tensor of shape (batch_size, 1, 1)
+Values in {0,1}</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.losses.BCELoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BCELoss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.losses.BCELoss.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.losses.BCELoss.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pygrad.losses.BCELoss.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.losses.BCELoss.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.losses.BCELoss.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.losses.CCELoss">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.losses.</span></span><span class="sig-name descname"><span class="pre">CCELoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CCELoss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.losses.CCELoss" title="Link to this definition">¶</a></dt>
+<dd><p>Categorical Cross Entropy Loss.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.losses.CCELoss.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.losses.CCELoss.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Performs CCE on pred and target, with an optional mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred</strong> – A Tensor of shape (batch_size, 1, w) with values in [0,1]</p></li>
+<li><p><strong>target</strong> – A Tensor of shape (batch_size, 1, w) with values in {0,1}</p></li>
+<li><p><strong>mask</strong> – A boolean. If true, the CCE is only computed across values 
+where the target has an output in dimension -1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.losses.CCELoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CCELoss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.losses.CCELoss.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.losses.CCELoss.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.losses.CCELoss.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.losses.CCELoss.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.losses.CCELoss.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-pygrad.optims"><span id="optimsmethods"></span>Module storing (gradient descent) optimization methods.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.optims.Adam">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.optims.</span></span><span class="sig-name descname"><span class="pre">Adam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.Adam" title="Link to this definition">¶</a></dt>
+<dd><p>Adam Optimizer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.Adam.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.Adam.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes Adam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_parameters</strong> (<em>list</em>) – This is a list of Tensors specifying the pre-order traversal of a Tensor’s computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params</p></li>
+<li><p><strong>beta1</strong> (<em>float. Defaults to 0.9.</em>) – the beta1 parameter to use</p></li>
+<li><p><strong>beta2</strong> (<em>float. Defaults to 0.999.</em>) – the beta2 parameter to use</p></li>
+<li><p><strong>eps</strong> (<em>float. Defaults to 1e-8.</em>) – the epsilon to use</p></li>
+<li><p><strong>lr</strong> (<em>float. Defaults to 1e-5.</em>) – the learning rate.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.optims.Adam.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.optims.Adam.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.Adam.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.Adam.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of Adam on model_parameters according to the loss function’s gradients.</p>
+<p>Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.Adam.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.Adam.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>Perform gradient descent on a loss, with control over value modification.</p>
+<p>This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.</p>
+<dl class="simple">
+<dt>The single step of gradient descent is split into two components.</dt><dd><ol class="arabic simple">
+<li><p>Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.</p></li>
+<li><p>Model parameter values are updated. This is set when modify=True</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.Adam.zero_adam">
+<span class="sig-name descname"><span class="pre">zero_adam</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.Adam.zero_adam" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the momentums and variances stored by Adam for each model parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.Adam.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.Adam.zero_grad" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the model parameter gradients.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.optims.RMSProp">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.optims.</span></span><span class="sig-name descname"><span class="pre">RMSProp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.RMSProp" title="Link to this definition">¶</a></dt>
+<dd><p>RMS Prop.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.RMSProp.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.RMSProp.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the RMS Prop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_parameters</strong> (<em>list</em>) – This is a list of Tensors specifying the pre-order traversal of a Tensor’s computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params</p></li>
+<li><p><strong>beta</strong> (<em>float. Defaults to 0.9.</em>) – the beta parameter to use in RMSProp.</p></li>
+<li><p><strong>lr</strong> (<em>float. Defaults to 1e-5.</em>) – the learning rate.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.optims.RMSProp.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.optims.RMSProp.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.RMSProp.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.RMSProp.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of RMSProp on model_parameters according to the loss function’s gradients.</p>
+<p>Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.RMSProp.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.RMSProp.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.</p>
+<dl class="simple">
+<dt>The single step of gradient descent is split into two components.</dt><dd><ol class="arabic simple">
+<li><p>Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.</p></li>
+<li><p>Model parameter values are updated. This is set when modify=True</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.optims.SGD">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.optims.</span></span><span class="sig-name descname"><span class="pre">SGD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD" title="Link to this definition">¶</a></dt>
+<dd><p>Vanilla Gradient Descent.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the SGD optimizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_parameters</strong> (<em>list</em>) – This is a list of Tensors specifying the pre-order traversal of a Tensor’s computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params</p></li>
+<li><p><strong>lr</strong> (<em>float. Defaults to 1e-5.</em>) – the learning rate for SGD</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.optims.SGD.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.optims.SGD.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.optims.SGD.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of gradient descent on model_parameters according to the loss function’s gradients.</p>
+<p>Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pygrad.optims.SGD.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.</p>
+<dl class="simple">
+<dt>The single step of gradient descent is split into two components.</dt><dd><ol class="arabic simple">
+<li><p>Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.</p></li>
+<li><p>Model parameter values are updated. This is set when modify=True</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD.zero_grad" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the gradient of each Tensor in model_parameters to 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.optims.SGD_Momentum">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.optims.</span></span><span class="sig-name descname"><span class="pre">SGD_Momentum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD_Momentum" title="Link to this definition">¶</a></dt>
+<dd><p>Gradient Descent with Momentum.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD_Momentum.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD_Momentum.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the SGD with momentum optimizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_parameters</strong> (<em>list</em>) – This is a list of Tensors specifying the pre-order traversal of a Tensor’s computational graph. This is given either from Tensor.create_graph[1] or for models subclassing Module as model.params</p></li>
+<li><p><strong>beta</strong> (<em>float. Defaults to 0.9.</em>) – the beta momentum parameter to use</p></li>
+<li><p><strong>lr</strong> (<em>float. Defaults to 1e-5.</em>) – the learning rate for SGD</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.optims.SGD_Momentum.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.optims.SGD_Momentum.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD_Momentum.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD_Momentum.step" title="Link to this definition">¶</a></dt>
+<dd><p>Performs a single step of gradient descent with momentum on model_parameters according to the loss function’s gradients.</p>
+<p>Gradients are both averaged across a batch, with Tensor values modified accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.optims.SGD_Momentum.step_single">
+<span class="sig-name descname"><span class="pre">step_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.optims.SGD_Momentum.step_single" title="Link to this definition">¶</a></dt>
+<dd><p>This function performing gradient descent on arbitrary batch sizes by allowing for any number of gradient updates before values are updated.</p>
+<dl class="simple">
+<dt>The single step of gradient descent is split into two components.</dt><dd><ol class="arabic simple">
+<li><p>Model parameter gradients are adjusted according to the average of the loss gradients. This is set when modify=False.</p></li>
+<li><p>Model parameter values are updated. This is set when modify=True</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> (<a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><em>Tensor</em></a>) – A Tensor specifying a loss function. This loss needs to have taken the output from the same model which provided self.model_parameters</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – The final batch_size to average gradients over.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em><em>, </em><em>defaults to False.</em>) – Whether or not to modify the model values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-pygrad.module"><span id="module-methods"></span>Module storing Module.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygrad.module.Module">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygrad.module.</span></span><span class="sig-name descname"><span class="pre">Module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.module.Module" title="Link to this definition">¶</a></dt>
+<dd><p>Module Class.</p>
+<p>Allows for performing batched forward and backwards passes on a model without modifying the model directly.
+The subclassed models must perform any required <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs type checking.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.module.Module.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pygrad.tensor.Tensor" title="pygrad.tensor.Tensor"><span class="pre">Tensor</span></a></span></span><a class="headerlink" href="#pygrad.module.Module.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the forward pass output of the model on a batched input.</p>
+<dl class="simple">
+<dt>Further:</dt><dd><ul class="simple">
+<li><p>Creates a batch-friendly version of the original model to do backprop with.</p></li>
+<li><p>Creates topological and weight graphs of the batched model, storing them in self.model_copy.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.module.Module.__init__">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.module.Module.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygrad.module.Module.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#pygrad.module.Module.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.module.Module.forward">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.module.Module.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Ensure this method is defined in the subclass.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygrad.module.Module.model_reset">
+<span class="sig-name descname"><span class="pre">model_reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygrad.module.Module.model_reset" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes the batched model.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2024, Danila Kurganov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/methods.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/baubels/pygrad" class="github">
+        <img src="_static/github-banner.svg" alt="Fork me on GitHub" class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

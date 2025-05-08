@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pygrad documentation &#8212; pygrad 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">pygrad</a></h1>
+
+
+
+<p class="blurb">A lightweight differentiation engine written in Python.</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=baubels&repo=pygrad&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Class methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contrib.html">Contributions/Problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About me</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="usage.html" title="next chapter">Usage</a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pygrad-documentation">
+<h1>pygrad documentation<a class="headerlink" href="#pygrad-documentation" title="Link to this heading">¶</a></h1>
+<p><strong>pygrad</strong> is a lightweight automatic differentiation engine:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>written entirely in Python,</p></li>
+<li><p>relying only on NumPy, Numba, and opt_einsum,</p></li>
+<li><p>verified against Pytorch^*,</p></li>
+<li><p>and less than 300kB in size.</p></li>
+</ul>
+</div></blockquote>
+<p>Pygrad will be useful to you if you are looking to compute gradients and/or perform
+gradient descent for models with less than 1 million parameters.</p>
+<p>Pygrad’s <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> object operates like a NumPy array, additionally storing gradients.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Tensors</span></code>:</dt><dd><ul class="simple">
+<li><p>Store operations performed on them, with support for broadcasting</p></li>
+<li><p>Perform backpropagation with <code class="docutils literal notranslate"><span class="pre">.backward()</span></code></p></li>
+<li><p>Store gradients in <code class="docutils literal notranslate"><span class="pre">.grad</span></code></p></li>
+<li><p>Support np.float16 to np.float128 data types</p></li>
+</ul>
+</dd>
+</dl>
+<p>A simple example performing gradient descent on a Tensor:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pygrad.tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">,</span> <span class="n">yh</span><span class="p">:</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">yh</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>   <span class="c1"># L2 norm</span>
+<span class="n">x</span>       <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                 <span class="c1"># Tensor</span>
+<span class="n">y</span>       <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.25</span>               <span class="c1"># model</span>
+<span class="n">yh</span>      <span class="o">=</span> <span class="mf">0.5</span>                       <span class="c1"># float</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+   <span class="n">y</span>    <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.25</span>               <span class="c1"># fwd pass</span>
+   <span class="n">loss_fn</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">yh</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>         <span class="c1"># populates x.grad</span>
+   <span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="mf">0.01</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span>  <span class="c1"># gradient descent</span>
+
+<span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">yh</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>        <span class="c1"># 0.5, 0</span>
+</pre></div>
+</div>
+<p>This documentation includes examples using Tensors to perform gradient descent on the very
+simplest of functions to training a Vaswani Transformer with Adam.</p>
+<p>For installation instructions and a quick glance at usage, see <a class="reference internal" href="usage.html"><span class="doc">Usage</span></a>.
+All classes and functions can be found in <a class="reference internal" href="api.html"><span class="doc">API</span></a>.
+For in-depth module descriptions, check out <a class="reference internal" href="modules.html"><span class="doc">Modules</span></a>.</p>
+<p>If you are interesting in contributing, <a class="reference internal" href="contrib.html#contribs"><span class="std std-ref">please click here</span></a>. If you are wondering who I am, <a class="reference internal" href="about.html#aboutme"><span class="std std-ref">click here</span></a></p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#basic-usage">Basic Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#tensor">tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#basics-activations-and-losses">basics, activations, and losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#optims">optims</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#module">module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#attributes">Attributes:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#attributes-after-basic-ops">Attributes after basic ops:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#working-with-numpy-arrays">Working with NumPy arrays:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#manual-gradient-descent">Manual Gradient Descent:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#gradient-descent-with-optim">Gradient Descent with <code class="docutils literal notranslate"><span class="pre">optim</span></code>:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#full-deep-neural-network">Full Deep Neural Network:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#pygrad">pygrad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#architectures">architectures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#examples">examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Class methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.tensor.Tensor"><code class="docutils literal notranslate"><span class="pre">Tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.tensor.array"><code class="docutils literal notranslate"><span class="pre">array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.basics.AddNorm"><code class="docutils literal notranslate"><span class="pre">AddNorm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.basics.Conv2D"><code class="docutils literal notranslate"><span class="pre">Conv2D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.basics.Dropout"><code class="docutils literal notranslate"><span class="pre">Dropout</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.basics.Flatten"><code class="docutils literal notranslate"><span class="pre">Flatten</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.basics.Linear"><code class="docutils literal notranslate"><span class="pre">Linear</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.basics.Softmax"><code class="docutils literal notranslate"><span class="pre">Softmax</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.activations.ReLU"><code class="docutils literal notranslate"><span class="pre">ReLU</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.losses.BCELoss"><code class="docutils literal notranslate"><span class="pre">BCELoss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.losses.CCELoss"><code class="docutils literal notranslate"><span class="pre">CCELoss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.optims.Adam"><code class="docutils literal notranslate"><span class="pre">Adam</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.optims.RMSProp"><code class="docutils literal notranslate"><span class="pre">RMSProp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.optims.SGD"><code class="docutils literal notranslate"><span class="pre">SGD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.optims.SGD_Momentum"><code class="docutils literal notranslate"><span class="pre">SGD_Momentum</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#pygrad.module.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contrib.html">Contributions/Problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About me</a></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a href="#id1"><span class="problematic" id="id2">*</span></a>All operations are verified against Pytorch, except for Conv2D gradients
+when performing strictly more than 1 backwards pass when <code class="docutils literal notranslate"><span class="pre">reset_grad=False</span></code>.</p>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2024, Danila Kurganov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/baubels/pygrad" class="github">
+        <img src="_static/github-banner.svg" alt="Fork me on GitHub" class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

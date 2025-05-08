@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Contributions/Problems &#8212; pygrad 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="About me" href="about.html" />
+    <link rel="prev" title="Class methods" href="methods.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygrad</a></h1>
+
+
+
+<p class="blurb">A lightweight differentiation engine written in Python.</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=baubels&repo=pygrad&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Class methods</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributions/Problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About me</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="methods.html" title="previous chapter">Class methods</a></li>
+      <li>Next: <a href="about.html" title="next chapter">About me</a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="contributions-problems">
+<span id="contribs"></span><h1>Contributions/Problems<a class="headerlink" href="#contributions-problems" title="Link to this heading">¶</a></h1>
+<p>Thank you for your interest in this project!
+As the sole maintainer, I am currently not accepting pull requests or code contributions,
+but I will reviewing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>bugs, or serious flaw reports,</p></li>
+<li><p>feature requests,</p></li>
+<li><p>documentation suggestions,</p></li>
+<li><p>and any other suggestions.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>If you have feature requests</strong></p>
+<p>Please note that <code class="docutils literal notranslate"><span class="pre">pygrad</span></code> is a lightweight library with few dependencies.
+It should also be simple and easy to use. I want to keep it this way.
+I am not looking to replace PyTorch or Tensorflow.</p>
+<dl class="simple">
+<dt><strong>How to Submit an Issue:</strong></dt><dd><ul class="simple">
+<li><p>Create issue: <a class="reference external" href="https://github.com/baubels/pygrad/issues">https://github.com/baubels/pygrad/issues</a>.</p></li>
+<li><p>Include as much detail as possible.</p></li>
+<li><p>Check existing issues to ensure you don’t submit a duplicate.</p></li>
+<li><p>For bug reports: include steps to reproduce, expected behaviour, and actual behaviour.</p></li>
+<li><p>For feature requests: describe the feature in detail and how it would benefit the project.</p></li>
+<li><p>For suggestions: describe the suggestion, and why it might be relevant.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Gradient computations are wrong and related issues:</strong></p>
+<p>Some libraries will compute different gradients from one another for the same object.</p>
+<p>For example, if you had a single Tensor A that produces two Tensors B and C,
+gradient contributions during backpropagation from B and C should be added.
+However, Pytorch has the convention of averaging gradient contributions.</p>
+<p>For purposes of being able to test the correctness of <code class="docutils literal notranslate"><span class="pre">pygrad</span></code> more easily
+and offer better cross-compatibility with <code class="docutils literal notranslate"><span class="pre">Pytorch</span></code>, it was determined that
+<code class="docutils literal notranslate"><span class="pre">pygrad</span></code> would obey the conventions <code class="docutils literal notranslate"><span class="pre">Pytorch</span></code> has when doing backpropagation.</p>
+<p>If you are receiving unexpected gradients, please check if you are getting the same issue with <code class="docutils literal notranslate"><span class="pre">Pytorch</span></code>
+first before submitting an issue.</p>
+<p>It’s also been difficult to figure out how <code class="docutils literal notranslate"><span class="pre">Conv2D</span></code> in Pytorch is implemented when determining gradients
+specifically when calling <code class="docutils literal notranslate"><span class="pre">.backward()</span></code> more than once. For this reason, <code class="docutils literal notranslate"><span class="pre">pygrad</span></code> will output different gradients
+than might be expected here.</p>
+<p><strong>What Happens After You Submit an Issue:</strong></p>
+<p>I will review and implement if accepted.
+If there are discussions, implementation decisions will wait until discussions are resolved.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2024, Danila Kurganov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/contrib.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/baubels/pygrad" class="github">
+        <img src="_static/github-banner.svg" alt="Fork me on GitHub" class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
